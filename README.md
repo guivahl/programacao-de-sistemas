@@ -1,4 +1,8 @@
-# Máquina Virtual 💻
+# Projeto de Programação de Sistemas 💻
+
+![GitHub repo size](https://img.shields.io/github/repo-size/guivahl/programacao-de-sistemas?style=for-the-badge)
+![GitHub language count](https://img.shields.io/github/languages/count/guivahl/programacao-de-sistemas?style=for-the-badge)
+![GitHub forks](https://img.shields.io/github/forks/guivahl/programacao-de-sistemas?style=for-the-badge)
 
 ## O que é? 
 Esse repositório consiste no projeto desenvolvido durante a dicisplina de Programação de Sjstemas, onde nosso trabalho é construir uma máquina virtual e um montador no qual irão receber códigos em assembly como input e seu output será a execução do código fonte fornecido.
