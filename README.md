@@ -7,10 +7,15 @@
 ## O que é? 🤔
 Esse repositório consiste no projeto desenvolvido durante a dicisplina de Programação de Sjstemas, onde nosso trabalho é construir uma máquina virtual e um montador no qual irão receber códigos em assembly como input e seu output será a execução do código fonte fornecido.
 
+<<<<<<< Updated upstream
 [Saiba mais acessando a wiki do repo](https://github.com/guivahl/programacao-de-sistemas/wiki)
 
 ## Como executar? ☕ 
 Vamo agora ao passo a passo para você colocar as mãos na massa nesse projeto! 🤩
+=======
+## Como executar? 
+Para executar o projeto, você deve primeiro clonar esse projeto.
+>>>>>>> Stashed changes
 
 ### Pré requisitos ✅
 
@@ -23,7 +28,11 @@ Vamo agora ao passo a passo para você colocar as mãos na massa nesse projeto! 
 $ git clone https://github.com/guivahl/programacao-de-sistemas.git
 ```
 
+<<<<<<< Updated upstream
 ### Executando 👨‍💻
+=======
+### Executando 
+>>>>>>> Stashed changes
 
 - Navegue até a pasta onde você clonou o projeto
 
@@ -56,7 +65,11 @@ $ java vm.App
       <a href="#">
         <img src="https://avatars.githubusercontent.com/u/61896274?v=4" width="100px;" alt="Foto da Fernanda Kipper Github"/><br>
         <sub>
+<<<<<<< Updated upstream
           <b>Fernanda Kipper</b>
+=======
+          <b>Fernanda Kiper</b>
+>>>>>>> Stashed changes
         </sub>
       </a>
     </td>
