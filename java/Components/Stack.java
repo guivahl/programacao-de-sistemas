@@ -17,7 +17,7 @@ public class Stack {
 
     private String generateInitialValue(){
         char INITIAL_VALUE = '0';
-        char[] charArray = new char[15];
+        char[] charArray = new char[16];
         Arrays.fill(charArray, INITIAL_VALUE);
         String initialValue = new String(charArray);
         return initialValue;

@@ -12,7 +12,7 @@ public class Memory {
     }
 
     private boolean validateStringSize(String data){
-        return data.length() <= WORD_SIZE;
+        return data.length() == WORD_SIZE;
     }
 
     public String getValue(int position){
