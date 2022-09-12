@@ -4,7 +4,7 @@ import Components.*;
 
 public class App {
     public static void main(String[] args) throws Exception {
-        Memory memory = new Memory(100);
+        Memory memory = new Memory();
         Stack stack = new Stack(memory, 10);
         Register pc = new Register();
         Register acc = new Register();
@@ -18,7 +18,7 @@ public class App {
         }
 
         // testando
-        stack.push("00000000000000101");
+        stack.push("0000000000000101");
         System.out.println(stack.pop());
     }
 }
