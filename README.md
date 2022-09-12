@@ -12,13 +12,13 @@ Vamo agora ao passo a passo para você colocar as mãos na massa nesse projeto! 
 
 ### Pré requisitos ✅
 
-- Java versão 8 
-- Git 
+- Java versão >17
+- Git >2.3
 
 ### Clonando repositório ✍🏼
 
 ```bash
-$ git clone  
+$ git clone https://github.com/guivahl/programacao-de-sistemas.git
 ```
 
 ### Executando 👨‍💻
