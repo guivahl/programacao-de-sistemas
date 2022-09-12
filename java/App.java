@@ -19,6 +19,8 @@ public class App {
 
         // testando
         stack.push("0000000000000101");
+        System.out.println(memory.getValue(0));
         System.out.println(stack.pop());
+        System.out.println(memory.getValue(0));
     }
 }
