@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class SourceCodeHandler {
-    public String readFile(String pathname){
+    public String readFile(String pathname) throws FileNotFoundException{
         String data = "";
         try {
             File file = new File("resources/" + pathname);
@@ -15,29 +15,19 @@ public class SourceCodeHandler {
                 data += myReader.nextLine();
             }
             myReader.close();
-          } catch (FileNotFoundException e) {
-            System.out.println("An error occurred.");
-            e.printStackTrace();
+          } catch (FileNotFoundException error) {
+            throw new FileNotFoundException("Invalid pathname, file not found.");
         }
         return data;
     }
 
-    // transforma o source code em um array de string de 16 bits
+    // transforma o source code em um ArrayList de string de 16 bits
     // ex: ["000000000000010", "000000000000100"]
     public ArrayList<String> parseStringToWords(String data){
-        String[] bits = data.split("");
-        int count = 0;
+        String[] raw = data.split("(?<=\\G.{" + 16 + "})");
         ArrayList<String> words = new ArrayList<String>();
-        String currentWord = "";
-        for(String bit: bits){
-            if(count < 15){
-                currentWord += bit;
-                count++;
-            } else {
-                count = 0;
-                words.add(currentWord);
-                currentWord = "";
-            }
+        for(String word: raw){
+            words.add(word);
         }
         return words;
     }
