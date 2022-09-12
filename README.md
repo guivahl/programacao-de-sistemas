@@ -34,5 +34,5 @@ $ javac App.java
 - depois de compilar o arquivo, vamos executá-lo 
 
 ```bash
-$ java App.jar  
+$ java App  
 ```
