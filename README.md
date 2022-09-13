@@ -25,14 +25,20 @@ $ git clone https://github.com/guivahl/programacao-de-sistemas.git
 
 - Navegue até a pasta onde você clonou o projeto
 
-- Entre na pasta `java`, para compilarmos o projeto
-
 ```bash
-$ javac App.java  
+$ cd virtual-machine  
 ```
 
-- depois de compilar o arquivo, vamos executá-lo 
+- Entre na pasta `src`, para compilarmos o projeto
 
 ```bash
-$ java App  
+$ cd src
+$ javac vm/App.java -d ../
+```
+
+- depois de compilar o arquivo, vamos voltar a pasta raiz e executá-lo 
+
+```bash
+$ cd ..
+$ java vm.App  
 ```
