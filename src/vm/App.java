@@ -1,6 +1,8 @@
+package vm;
+
 import java.util.ArrayList;
 
-import Components.*;
+import vm.Components.*;
 
 public class App {
     public static void main(String[] args) throws Exception {

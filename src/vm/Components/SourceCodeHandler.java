@@ -1,4 +1,4 @@
-package Components;
+package vm.Components;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -9,9 +9,9 @@ import java.util.Scanner;
 public class SourceCodeHandler {
     public String readFile(String filename) throws FileNotFoundException{
         String data = "";
-        Path path = Path.of("src","resources", filename);
+        Path path = Path.of("src", "resources", filename);
         try {
-            File file = new File(path.toString());
+            File file = new File(path.toAbsolutePath().toString());
             Scanner myReader = new Scanner(file);
             while (myReader.hasNextLine()) {
                 data += myReader.nextLine();
