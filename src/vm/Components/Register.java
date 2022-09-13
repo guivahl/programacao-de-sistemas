@@ -6,9 +6,9 @@ import java.util.List;
 public class Register {
     private final List<Integer> SIZE_OPTIONS = Arrays.asList(8, 16);
         
-    String identifier;
-    String value;
-    int size;
+    private String identifier;
+    private String value;
+    private int size;
 
     public Register(String identifier, int size) {
         if (!SIZE_OPTIONS.contains(size)) {
@@ -26,6 +26,14 @@ public class Register {
 
     public String getValue(){
         return this.value;
+    }
+    
+    private int getSize() {
+        return this.size;
+    }
+        
+    private String getIdentifier() {
+        return this.identifier;
     }
 
     public void setValue(String value){
