@@ -1,4 +1,4 @@
-package Components;
+package vm.Components;
 
 public class Register {
     String identifier;
