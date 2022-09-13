@@ -2,14 +2,16 @@ package Components;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class SourceCodeHandler {
-    public String readFile(String pathname) throws FileNotFoundException{
+    public String readFile(String filename) throws FileNotFoundException{
         String data = "";
+        Path path = Path.of("src","resources", filename);
         try {
-            File file = new File("resources/" + pathname);
+            File file = new File(path.toString());
             Scanner myReader = new Scanner(file);
             while (myReader.hasNextLine()) {
                 data += myReader.nextLine();
