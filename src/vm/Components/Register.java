@@ -48,24 +48,12 @@ public class Register {
 
         this.value = value;
     }   
-    
-    private int getSize() {
-        return this.size;
-    }
-        
-    private String getIdentifier() {
-        return this.identifier;
-    }
 
     private String createInitialValue(int size) {
-        char INITIAL_VALUE = '0';
+        String BIT_VALUE_ZERO = "0";
 
-        char[] charArray = new char[size];
+        String initalMemoryValue = BIT_VALUE_ZERO.repeat(size);
         
-        Arrays.fill(charArray, INITIAL_VALUE);
-
-        String initialValue = new String(charArray);
-
-        return initialValue;
+        return initalMemoryValue;
     }
 }
