@@ -8,8 +8,13 @@ public class App {
     public static void main(String[] args) throws Exception {
         Memory memory = new Memory();
         Stack stack = new Stack(memory, 10);
-        Register pc = new Register();
-        Register acc = new Register();
+
+        Register programCounter = new Register("PC", 16);
+        Register stackPointer = new Register("SP", 16);
+        Register accumulator = new Register("ACC", 16);
+        Register operationMode = new Register("MOP", 8);
+        Register instructionRegister = new Register("RI", 16);
+        Register memoryAddressRegister = new Register("RE", 16);
 
         // Lê o source code e inicializa a memória com o programa
         SourceCodeHandler reader = new SourceCodeHandler();
