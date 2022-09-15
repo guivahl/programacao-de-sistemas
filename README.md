@@ -43,6 +43,9 @@ $ cd ..
 $ java vm.App  
 ```
 
+### Configurando Linter
+[Configuração do Linter para o projeto](https://github.com/guivahl/programacao-de-sistemas/wiki/Configura%C3%A7%C3%A3o-do-Linter)
+
 ## Colaboradores 🤝 
 
 <table>
