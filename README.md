@@ -56,7 +56,7 @@ $ java vm.App
       <a href="#">
         <img src="https://avatars.githubusercontent.com/u/61896274?v=4" width="100px;" alt="Foto da Fernanda Kipper Github"/><br>
         <sub>
-          <b>Fernanda Kiper</b>
+          <b>Fernanda Kipper</b>
         </sub>
       </a>
     </td>
