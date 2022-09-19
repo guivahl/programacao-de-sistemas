@@ -7,6 +7,8 @@
 ## O que é? 🤔
 Esse repositório consiste no projeto desenvolvido durante a dicisplina de Programação de Sjstemas, onde nosso trabalho é construir uma máquina virtual e um montador no qual irão receber códigos em assembly como input e seu output será a execução do código fonte fornecido.
 
+[Saiba mais acessando a wiki do repo](https://github.com/guivahl/programacao-de-sistemas/wiki)
+
 ## Como executar? ☕ 
 Vamo agora ao passo a passo para você colocar as mãos na massa nesse projeto! 🤩
 
