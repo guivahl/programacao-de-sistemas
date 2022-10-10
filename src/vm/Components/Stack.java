@@ -3,16 +3,20 @@ package vm.Components;
 import java.util.Arrays;
 
 public class Stack {
-    Memory memory;
-    int size;
-    int currentPosition;
-    String initialValue;
+    private Memory memory;
+    private int size;
+    private int currentPosition;
+    private String initialValue;
 
     public Stack(Memory memory, int size) {
         this.memory = memory;
         this.size = size;
         this.initialValue = this.generateInitialValue();
         this.initializeStack();
+    }
+
+    public int getSize() {
+        return this.size;
     }
 
     private String generateInitialValue(){
