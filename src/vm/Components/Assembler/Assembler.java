@@ -42,7 +42,7 @@ public class Assembler {
         }
     }
 
-    public void firstPass() throws FileNotFoundException, AssemblerException {
+    private void firstPass() throws FileNotFoundException, AssemblerException {
         Reader reader = new Reader("MASMAPRG.ASM");
         String line = reader.readLine();
 
@@ -131,7 +131,7 @@ public class Assembler {
         }
     }
 
-    public void secondPass() throws FileNotFoundException {
+    private void secondPass() throws FileNotFoundException {
         Reader reader = new Reader("MASMAPRG.ASM");
         Writer writer = new Writer("source-code.txt");
         String line = reader.readLine();
@@ -159,7 +159,7 @@ public class Assembler {
         }
     }
 
-    public String parseStringToBinarySixteenBits(String binary) {
+    private String parseStringToBinarySixteenBits(String binary) {
         String fullStr;
         String zeroes = "";
 
@@ -172,7 +172,7 @@ public class Assembler {
         return fullStr;
     }
 
-    public void setOpcodeValues() {
+    private void setOpcodeValues() {
         // key = str instruction
         // value = str binary, int instructionSize
 
