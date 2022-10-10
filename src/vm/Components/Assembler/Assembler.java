@@ -45,7 +45,7 @@ public class Assembler {
     public void firstPass() throws FileNotFoundException, AssemblerException {
         Reader reader = new Reader("MASMAPRG.ASM");
         String line = reader.readLine();
-        
+
         // retira comentarios
         line = line.split(";")[0];
         
@@ -151,7 +151,7 @@ public class Assembler {
                 }
 
                 if (data != "") {
-                    data = fillWithZeroes(data);
+                    data = parseStringToBinarySixteenBits(data);
                     writer.write(data);
                 }
             }
@@ -159,7 +159,7 @@ public class Assembler {
         }
     }
 
-    public String fillWithZeroes(String binary) {
+    public String parseStringToBinarySixteenBits(String binary) {
         String fullStr;
         String zeroes = "";
 
