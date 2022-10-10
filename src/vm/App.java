@@ -2,7 +2,11 @@ package vm;
 
 import java.util.ArrayList;
 
-import vm.Components.*;
+import vm.Components.Memory;
+import vm.Components.Register;
+import vm.Components.SourceCodeHandler;
+import vm.Components.Stack;
+import vm.Components.Assembler.Assembler;
 
 public class App {
     public static void main(String[] args) throws Exception {
@@ -15,6 +19,8 @@ public class App {
         Register operationMode = new Register("MOP", 8);
         Register instructionRegister = new Register("RI", 16);
         Register memoryAddressRegister = new Register("RE", 16);
+
+        Assembler assembler = new Assembler();
 
         // Lê o source code e inicializa a memória com o programa
         SourceCodeHandler reader = new SourceCodeHandler();
