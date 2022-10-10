@@ -19,6 +19,54 @@ public class Assembler {
         instructionsMap = new HashMap<>();
         symbolTable = new HashMap<>();
         setOpcodeValues();
+        assemble();
+    }
+
+    public void assemble() {
+        try {
+            firstPass();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            System.out.println("Erro no processo do primeiro passo do montador!");
+        }
+    }
+
+    public void firstPass() throws FileNotFoundException {
+        Reader reader = new Reader("MASMAPRG.ASM");
+        String line = reader.readLine();
+        int address = 0; // zero caso desconhecido
+        while (line != null) {
+            String [] params = line.split(" ");
+            for (String param : params) {
+                param = param.trim();
+                if (instructionsMap.containsKey(param)) {
+                    addressCounter += instructionsMap.get(param).getInstructionSize();
+                } else if (!instructionsMap.containsKey(param) && param.matches("[a-zA-Z_][a-zA-Z0-9_]*")) {
+                    // se segundo param nao for uma instrucao
+                    if (param == params[0]) {
+                        address = addressCounter;
+                        if (!instructionsMap.containsKey(params[1])) {
+                            addressCounter += 1;
+                        }
+                    } else {
+                        address = 0;
+                    }
+
+                    if (symbolTable.get(param) == null || symbolTable.get(param) == 0) {
+                        if (symbolTable.containsKey(param) && symbolTable.get(param) == 0) {
+                            symbolTable.replace(param, address);
+                        } else {
+                            symbolTable.put(param, address);
+                        }
+                    }
+                }
+            }
+
+            line = reader.readLine();
+            lineCounter++;
+        }
+
+        System.out.println(symbolTable);
     }
 
     public void setOpcodeValues() {
