@@ -13,13 +13,13 @@ public class App implements ActionListener {
     private Logger logger;
     private Memory memory;
     private Stack stack;
+    private GUI gui;
     private Register programCounter;
     private Register stackPointer;
     private Register accumulator;
     private Register operationMode;
     private Register instructionRegister;
     private Register memoryAddressRegister;
-    private GUI gui;
 
     public App(){
         this.logger = new Logger();
