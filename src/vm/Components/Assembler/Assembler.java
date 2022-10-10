@@ -28,52 +28,107 @@ public class Assembler {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             System.out.println("Erro no processo do primeiro passo do montador!");
+        } catch (AssemblerException e) {
+            return;
+        } finally {
+            System.out.println(symbolTable);
         }
         
         try {
             secondPass();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-            System.out.println("Erro no processo do primeiro passo do montador!");
+            System.out.println("Erro no processo do segundo passo do montador!");
         }
     }
 
-    public void firstPass() throws FileNotFoundException {
+    public void firstPass() throws FileNotFoundException, AssemblerException {
         Reader reader = new Reader("MASMAPRG.ASM");
         String line = reader.readLine();
-        int address = 0; // zero caso desconhecido
+        
+        // retira comentarios
+        line = line.split(";")[0];
+        
+        // endereco sera zero enquanto desconhecido
+        int address = 0;
         while (line != null) {
+
+            if (line.length() > 80) {
+                throw new AssemblerException("Assembler Exception: Invalid input at line " + lineCounter + ". Lines should have a maximum length of 80 characters.");
+            }
+
             String [] params = line.split(" ");
+            if (params.length > 4) {
+                throw new AssemblerException("Assembler Exception: Syntax error at line " + lineCounter + ". Too many parameters.");
+            }
+            
             for (String param : params) {
+
                 param = param.trim();
+
+                // caso seja constante
+                if (param.replace("@", "").matches("^\\d+$")) {
+                    // testa se pode ser representado com 16 bits
+                    if (Long.valueOf(param) > 65536) {
+                        throw new AssemblerException("Assembler Exception: Value (" + param + ") out of bounds at line " + lineCounter + ". Constant is larger than 16 bits.");
+                    }
+                // caso nao seja constante, testa se o simbolo comeca com uma letra
+                } else if (!param.matches("[a-zA-Z_][a-zA-Z0-9_]*")) {
+                    throw new AssemblerException("Assembler Exception: Invalid argument (" + param + ") at line " + lineCounter + ". Symbols should start with a letter.");
+                }
+
+                // caso o parametro seja uma instrucao
                 if (instructionsMap.containsKey(param)) {
                     addressCounter += instructionsMap.get(param).getInstructionSize();
+                // caso o parametro seja um simbolo
                 } else if (!instructionsMap.containsKey(param) && param.matches("[a-zA-Z_][a-zA-Z0-9_]*")) {
-                    // se segundo param nao for uma instrucao
+
+                    if (param.length() > 8) {
+                        throw new AssemblerException("Assembler Exception: Invalid argument (" + param + ") at line " + lineCounter + ". Symbol should have a maximum length of 8 characters.");
+                    }
+
+                    // caso o simbolo esteja sendo definido, address recebe o contador de endereco da definicao
                     if (param == params[0]) {
                         address = addressCounter;
+                        // se o segundo parametro nao contem uma instrucao, incrementa o contador de endereco em apenas um
                         if (!instructionsMap.containsKey(params[1])) {
                             addressCounter += 1;
                         }
+                    // caso o simbolo seja um operando, address recebe zero pois ainda nao se sabe o endereco real
                     } else {
                         address = 0;
                     }
 
+                    // o teste aqui esta duplicado pois o teste com null antes previne que crashe a clausula
+                    // caso o simbolo nao esteja na tabela de simbolos ou esteja sem endereco setado
                     if (symbolTable.get(param) == null || symbolTable.get(param) == 0) {
                         if (symbolTable.containsKey(param) && symbolTable.get(param) == 0) {
                             symbolTable.replace(param, address);
                         } else {
                             symbolTable.put(param, address);
                         }
+                    // caso o simbolo ja esteja na tabela de simbolos com um endereco setado
+                    } else if (symbolTable.get(param) != 0) {
+                        // se o simbolo estiver sendo redefinido, joga uma exception
+                        if (param == params[0]) {
+                            throw new AssemblerException("Assembler Exception: Invalid argument (" + param + ") at line " + lineCounter + ". Symbol is already defined.");
+                        }
                     }
+
                 }
+                
             }
 
             line = reader.readLine();
             lineCounter++;
         }
 
-        System.out.println(symbolTable);
+        // testa se algum simbolo nao foi definido ao final do primeiro passo
+        for (String key : symbolTable.keySet()) {
+            if (symbolTable.get(key) == 0) {
+                throw new AssemblerException("Assembler Exception: Missing arguments at input. Found undefined symbols at the end of the first pass.");
+            }
+        }
     }
 
     public void secondPass() throws FileNotFoundException {
@@ -87,7 +142,7 @@ public class Assembler {
                 // caso seja instrucao
                 if (instructionsMap.containsKey(param)) {
                     data = instructionsMap.get(param).getBinary();
-                // caso seja label (ignora se estiver na frente)
+                // caso seja simbolo (ignora se estiver na frente)
                 } else if (param != params[0] && symbolTable.containsKey(param)) {
                     data = Integer.toBinaryString(symbolTable.get(param));
                 // caso nao deva adicionar nada
@@ -108,6 +163,7 @@ public class Assembler {
         String fullStr;
         String zeroes = "";
 
+        // completa a string com 0s ate fechar 16
         for (int i = 0; i < 16 - binary.length(); i++) {
             zeroes += "0";
         }
