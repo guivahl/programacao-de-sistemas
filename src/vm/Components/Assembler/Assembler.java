@@ -29,6 +29,13 @@ public class Assembler {
             e.printStackTrace();
             System.out.println("Erro no processo do primeiro passo do montador!");
         }
+        
+        try {
+            secondPass();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            System.out.println("Erro no processo do primeiro passo do montador!");
+        }
     }
 
     public void firstPass() throws FileNotFoundException {
@@ -67,6 +74,46 @@ public class Assembler {
         }
 
         System.out.println(symbolTable);
+    }
+
+    public void secondPass() throws FileNotFoundException {
+        Reader reader = new Reader("MASMAPRG.ASM");
+        Writer writer = new Writer("source-code.txt");
+        String line = reader.readLine();
+        String data;
+        while (line != null) { 
+            String [] params = line.split(" ");
+            for (String param : params) {
+                // caso seja instrucao
+                if (instructionsMap.containsKey(param)) {
+                    data = instructionsMap.get(param).getBinary();
+                // caso seja label (ignora se estiver na frente)
+                } else if (param != params[0] && symbolTable.containsKey(param)) {
+                    data = Integer.toBinaryString(symbolTable.get(param));
+                // caso nao deva adicionar nada
+                } else {
+                    data = "";
+                }
+
+                if (data != "") {
+                    data = fillWithZeroes(data);
+                    writer.write(data);
+                }
+            }
+            line = reader.readLine();
+        }
+    }
+
+    public String fillWithZeroes(String binary) {
+        String fullStr;
+        String zeroes = "";
+
+        for (int i = 0; i < 16 - binary.length(); i++) {
+            zeroes += "0";
+        }
+
+        fullStr = zeroes + binary;
+        return fullStr;
     }
 
     public void setOpcodeValues() {
