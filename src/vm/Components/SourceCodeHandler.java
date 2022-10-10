@@ -6,11 +6,23 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import vm.Components.Logger.Logger;
+
 public class SourceCodeHandler {
+    private static final int WORD_SIZE = 16;
+    private Logger logger;
+
+    public SourceCodeHandler(Logger logger){
+        this.logger = logger;
+    }
+
     public String readFile(String filename) throws FileNotFoundException{
         String data = "";
         Path path = Path.of("src", "resources", filename);
+
         try {
+            this.logger.logMessage("reading binary source code", Logger.SUCCESS_MESSAGE);
+
             File file = new File(path.toAbsolutePath().toString());
             Scanner myReader = new Scanner(file);
             while (myReader.hasNextLine()) {
