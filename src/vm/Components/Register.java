@@ -6,7 +6,7 @@ import java.util.List;
 public class Register {
     private final List<Integer> SIZE_OPTIONS = Arrays.asList(8, 16);
         
-    private String identifier;
+    public String identifier;
     private String value;
     private int size;
 
