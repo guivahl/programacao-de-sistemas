@@ -33,7 +33,7 @@ public class Assembler {
         } finally {
             System.out.println(symbolTable);
         }
-        
+
         try {
             secondPass();
         } catch (FileNotFoundException e) {
@@ -48,7 +48,7 @@ public class Assembler {
 
         // retira comentarios
         line = line.split(";")[0];
-        
+
         // endereco sera zero enquanto desconhecido
         int address = 0;
         while (line != null) {
@@ -61,7 +61,7 @@ public class Assembler {
             if (params.length > 4) {
                 throw new AssemblerException("Assembler Exception: Syntax error at line " + lineCounter + ". Too many parameters.");
             }
-            
+
             for (String param : params) {
 
                 param = param.trim();
@@ -116,7 +116,7 @@ public class Assembler {
                     }
 
                 }
-                
+
             }
 
             line = reader.readLine();
@@ -145,6 +145,9 @@ public class Assembler {
                 // caso seja simbolo (ignora se estiver na frente)
                 } else if (param != params[0] && symbolTable.containsKey(param)) {
                     data = Integer.toBinaryString(symbolTable.get(param));
+                // caso seja constante/literal
+                } else if (param.replace("@", "").matches("^\\d+$")) {
+                    data = Long.toBinaryString(Long.valueOf(param));
                 // caso nao deva adicionar nada
                 } else {
                     data = "";
@@ -153,6 +156,7 @@ public class Assembler {
                 if (data != "") {
                     data = parseStringToBinarySixteenBits(data);
                     writer.write(data);
+                    
                 }
             }
             line = reader.readLine();
@@ -193,12 +197,12 @@ public class Assembler {
         instructionsMap.put("STORE", new InstructionsWrapper("00111", 2));
         instructionsMap.put("SUB", new InstructionsWrapper("00110", 2));
         instructionsMap.put("WRITE", new InstructionsWrapper("01000", 2));
-    
+
         // instrucoes do montador
         instructionsMap.put("START", new InstructionsWrapper("", 0));
         instructionsMap.put("END", new InstructionsWrapper("", 0));
         instructionsMap.put("CONST", new InstructionsWrapper("", 1));
-        instructionsMap.put("SPACE", new InstructionsWrapper("", 1));
+        instructionsMap.put("SPACE", new InstructionsWrapper("00000", 1));
         instructionsMap.put("STACK", new InstructionsWrapper("", 0));
     }
 }
