@@ -18,7 +18,7 @@ public class Assembler {
         lineCounter = 1;
         instructionsMap = new HashMap<>();
         symbolTable = new HashMap<>();
-        setOpcodeValues();
+        setInstructionData();
         assemble();
     }
 
@@ -176,7 +176,7 @@ public class Assembler {
         return fullStr;
     }
 
-    private void setOpcodeValues() {
+    private void setInstructionData() {
         // key = str instruction
         // value = str binary, int instructionSize
 
