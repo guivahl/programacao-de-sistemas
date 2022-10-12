@@ -12,9 +12,9 @@ public class Register {
 
     public Register(String identifier, int size) {
         if (!SIZE_OPTIONS.contains(size)) {
-            String expectationMessage = String.format("Size of register %s is invalid!", identifier);
+            String excepctionMessage = String.format("Size of register %s is invalid!", identifier);
             
-            throw new IllegalArgumentException(expectationMessage);
+            throw new IllegalArgumentException(excepctionMessage);
         }
 
         String initialValue = this.createInitialValue(size);
@@ -41,9 +41,9 @@ public class Register {
         int registerSize = this.getSize();
 
         if (newValueSize != registerSize) {
-            String expectationMessage = String.format("The value of register %s should have size %2d!", this.getIdentifier(), this.getSize());
+            String excepctionMessage = String.format("The value of register %s should have size %2d!", this.getIdentifier(), this.getSize());
             
-            throw new IllegalArgumentException(expectationMessage);
+            throw new IllegalArgumentException(excepctionMessage);
         }
 
         this.value = value;
