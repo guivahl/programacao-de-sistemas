@@ -14,6 +14,7 @@ import java.awt.GridBagConstraints;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -29,11 +30,11 @@ public class GUI {
     ArrayList<Register> registers;
     Memory memory;
 
-    private JPanel terminalPanel;
     private JPanel mainPanel;
     private JPanel stackPanel;
     private JPanel valuesPanel;
     private JPanel btnControlPanel;
+    private JScrollPane terminalPanel;
     RegistersPanel registersPanel;
 
     public JButton runBtn;

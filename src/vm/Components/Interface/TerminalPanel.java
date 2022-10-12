@@ -7,29 +7,38 @@ import java.awt.Color;
 
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneLayout;
 
 import vm.Components.Logger.Logger;
 import vm.Components.Logger.Log;
 
 public class TerminalPanel implements Observer {
-    public JPanel panel;
+    public JScrollPane panel;
+    JPanel innerPanel;
 
     public TerminalPanel(Observable logger){
         logger.addObserver(this);
 
-        this.panel = new JPanel();
-        this.panel.setLayout(new BoxLayout(this.panel, BoxLayout.Y_AXIS));
-        this.panel.setBackground(Color.BLACK);
-        this.panel.setOpaque(true);
+        this.panel = new JScrollPane();
+        this.panel.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);  
+        this.panel.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS); 
+        this.panel.setLayout(new ScrollPaneLayout());
+
+        this.innerPanel = new JPanel();
+        this.innerPanel.setBackground(Color.BLACK);
+        this.innerPanel.setOpaque(true);
+
+        this.panel.add(this.innerPanel, JScrollPane.CENTER_ALIGNMENT);
     }
 
     public void updateUI(){
-        this.panel.updateUI();
+        this.innerPanel.updateUI();
     }
 
     public void addLabelTerminalPanel(String message, Color color){
         Label log = new Label(message, color, Color.BLACK, 100, 50, 1);
-        this.panel.add(log.label);
+        this.innerPanel.add(log.label);
         this.updateUI();
     }
 
