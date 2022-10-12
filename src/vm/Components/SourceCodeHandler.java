@@ -16,7 +16,7 @@ public class SourceCodeHandler {
         this.logger = logger;
     }
 
-    public String readFile(String filename) throws FileNotFoundException{
+    public String readFile(String filename){
         String data = "";
         Path path = Path.of("src", "resources", filename);
 
@@ -30,7 +30,7 @@ public class SourceCodeHandler {
             }
             myReader.close();
           } catch (FileNotFoundException error) {
-            throw new FileNotFoundException("Invalid pathname, file not found.");
+            logger.logMessage("exception file not found", Logger.ERROR_MESSAGE);
         }
         return data;
     }

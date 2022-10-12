@@ -1,6 +1,5 @@
 package vm;
 
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 import vm.Components.Memory;
@@ -40,10 +39,11 @@ public class App implements ActionListener {
         this.instructionRegister = initializeRegister("RI", 16, registers);
         this.memoryAddressRegister = initializeRegister("RE", 16, registers);
 
-        gui = new GUI(stack, registers, memory, logger);
+        gui = new GUI(registers, memory, logger);
         logger.logMessage("machine components initialized successfully", Logger.SUCCESS_MESSAGE);
 
-        gui.runButton.addActionListener(this);
+        gui.runBtn.addActionListener(this);
+        gui.mountBtn.addActionListener(this);
     }
 
     public static void main(String[] args) throws Exception {
@@ -58,29 +58,33 @@ public class App implements ActionListener {
     }
 
     private void run() {
-        this.gui.cleanTerminalPanel();
-        this.logger.logMessage("starting running", Logger.SUCCESS_MESSAGE);
+        this.logger.logMessage("starting running...", Logger.SUCCESS_MESSAGE);
 
         this.assembler = new Assembler();
 
         // Lê o source code e inicializa a memória com o programa
         SourceCodeHandler reader = new SourceCodeHandler(logger);
         String data;
-        try {
-            data = reader.readFile("source-code.txt");
-            ArrayList<String> words = reader.parseStringToWords(data);
+        data = reader.readFile("source-code.txt");
+        ArrayList<String> words = reader.parseStringToWords(data);
+        if(data.length() > 0){
             for(String word : words) {
                 memory.pushValue(word);
             }
-        } catch (FileNotFoundException e) {
-            logger.logMessage("Source code not found", Logger.ERROR_MESSAGE);
+        } else {
+            logger.logMessage("source code is empty", Logger.ATTENTION_MESSAGE);
         }
 
         // TODO: chamar a classe Operations para executar código
     }
 
+    private void mount(){
+        //TODO: iniciar montagem com assembler
+    }
+
     // listener pro botão de rodar programa
-    public void actionPerformed(ActionEvent e) {
-        this.run();
+    public void actionPerformed(ActionEvent event) {
+        if(event.getActionCommand() == "run") this.run();
+        if(event.getActionCommand() == "mount") this.mount();
     }
 }
