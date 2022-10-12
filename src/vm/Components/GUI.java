@@ -6,7 +6,6 @@ import java.util.Observable;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -14,7 +13,6 @@ import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -25,13 +23,11 @@ import vm.Components.Interface.Label;
 import vm.Components.Interface.RegistersPanel;
 import vm.Components.Interface.StackPanel;
 import vm.Components.Interface.TerminalPanel;
-import vm.Components.Logger.Logger;
 
 public class GUI {
     Stack stack;
     ArrayList<Register> registers;
     Memory memory;
-    Observable logger;
 
     private JPanel terminalPanel;
     private JPanel mainPanel;
