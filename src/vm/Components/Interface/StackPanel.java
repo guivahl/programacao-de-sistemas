@@ -16,28 +16,25 @@ import javax.swing.JLabel;
 public class StackPanel implements Observer {
     static int STACK_SIZE = 10;
 
-    Observable memoryObs;
-    JPanel panel;
+    public JPanel panel;
 
     public StackPanel(Observable memory){
-        this.memoryObs = memory;
-
         this.panel = new JPanel();
         this.panel.setBorder(BorderFactory.createLineBorder(Color.GRAY));
         this.panel.setBackground(Color.BLACK);
         this.panel.setLayout(new GridLayout(STACK_SIZE, 1));
 
-        this.setPanelValues();
+        this.setPanelValues(memory);
     }
 
-    private void setPanelValues(){
+    private void setPanelValues(Observable memoryObs){
         if (memoryObs instanceof Memory) {
             Memory memory = (Memory) memoryObs;
 
             for(int i = 0; i < STACK_SIZE; i++){
                 String value = i + ": " + memory.getValue(i);
-                Heading valueLabel = new Heading(value, Color.WHITE, null, 50, 20, 1);
-                this.panel.add(valueLabel.heading);
+                Label valueLabel = new Label(value, Color.WHITE, null, 50, 20, 1);
+                this.panel.add(valueLabel.label);
             }
         }
     }
@@ -50,8 +47,8 @@ public class StackPanel implements Observer {
     @Override
     public void update(Observable obs, Object arg) {
         if (obs instanceof Memory) {
-            this.memoryObs = obs;
-            this.setPanelValues();
+            this.setPanelValues(obs);
+            this.panel.updateUI();
         }
     }
 }
