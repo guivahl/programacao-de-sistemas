@@ -4,6 +4,7 @@ import java.util.Observable;
 import java.util.Observer;
 
 import java.awt.Color;
+import java.awt.BorderLayout;  
 
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
@@ -26,10 +27,11 @@ public class TerminalPanel implements Observer {
         this.panel.setLayout(new ScrollPaneLayout());
 
         this.innerPanel = new JPanel();
+        this.innerPanel.setLayout(new BoxLayout(this.innerPanel, BoxLayout.Y_AXIS));
         this.innerPanel.setBackground(Color.BLACK);
         this.innerPanel.setOpaque(true);
 
-        this.panel.add(this.innerPanel, JScrollPane.CENTER_ALIGNMENT);
+        this.panel.setViewportView(innerPanel);
     }
 
     public void updateUI(){
