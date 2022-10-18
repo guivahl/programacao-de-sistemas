@@ -100,5 +100,13 @@ $ java vm.App
         </sub>
       </a>
     </td>
+    <td align="center">
+      <a href="#">
+        <img src="https://avatars.githubusercontent.com/u/89227363?v=4" width="100px;" alt="Foto de Isabele Scherdien"/><br>
+        <sub>
+          <b>Isabele Scherdien</b>
+        </sub>
+      </a>
+    </td>
   </tr>
 </table>
