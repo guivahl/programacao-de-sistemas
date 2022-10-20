@@ -8,6 +8,12 @@ import vm.Components.FileHandlers.Reader;
 import vm.Components.FileHandlers.Writer;
 
 public class Assembler {
+    private static final int LINE_MAX_PARAMS = 4;
+    private static final int LINE_MAX_LENGTH = 80;
+    private static final int PARAM_MAX_LENGTH = 8;
+    private static final int PARAM_MAX_VALUE = 65536;
+    private static final String REGEX_STARTS_WITH_LETTER = "[a-zA-Z_][a-zA-Z0-9_]*";
+
     private int addressCounter;
     private int lineCounter;
     private Map<String, InstructionWrapper> instructionsMap;
@@ -53,12 +59,12 @@ public class Assembler {
         int address = 0;
         while (line != null) {
 
-            if (line.length() > 80) {
+            if (line.length() > LINE_MAX_LENGTH) {
                 throw new AssemblerException("Assembler Exception: Invalid input at line " + lineCounter + ". Lines should have a maximum length of 80 characters.");
             }
 
             String [] params = line.split(" ");
-            if (params.length > 4) {
+            if (params.length > LINE_MAX_PARAMS) {
                 throw new AssemblerException("Assembler Exception: Syntax error at line " + lineCounter + ". Too many parameters.");
             }
 
@@ -69,11 +75,11 @@ public class Assembler {
                 // caso seja constante
                 if (param.replace("@", "").matches("^\\d+$")) {
                     // testa se pode ser representado com 16 bits
-                    if (Long.valueOf(param) > 65536) {
+                    if (Long.valueOf(param) > PARAM_MAX_VALUE) {
                         throw new AssemblerException("Assembler Exception: Value (" + param + ") out of bounds at line " + lineCounter + ". Constant is larger than 16 bits.");
                     }
                 // caso nao seja constante, testa se o simbolo comeca com uma letra
-                } else if (!param.matches("[a-zA-Z_][a-zA-Z0-9_]*")) {
+                } else if (!param.matches(REGEX_STARTS_WITH_LETTER)) {
                     throw new AssemblerException("Assembler Exception: Invalid argument (" + param + ") at line " + lineCounter + ". Symbols should start with a letter.");
                 }
 
@@ -81,9 +87,9 @@ public class Assembler {
                 if (instructionsMap.containsKey(param)) {
                     addressCounter += instructionsMap.get(param).getInstructionSize();
                 // caso o parametro seja um simbolo
-                } else if (!instructionsMap.containsKey(param) && param.matches("[a-zA-Z_][a-zA-Z0-9_]*")) {
+                } else if (!instructionsMap.containsKey(param) && param.matches(REGEX_STARTS_WITH_LETTER)) {
 
-                    if (param.length() > 8) {
+                    if (param.length() > PARAM_MAX_LENGTH) {
                         throw new AssemblerException("Assembler Exception: Invalid argument (" + param + ") at line " + lineCounter + ". Symbol should have a maximum length of 8 characters.");
                     }
 
@@ -136,7 +142,7 @@ public class Assembler {
         Writer writer = new Writer("source-code.txt");
         String line = reader.readLine();
         String data;
-        while (line != null) { 
+        while (line != null) {
             String [] params = line.split(" ");
             for (String param : params) {
                 // caso seja instrucao
