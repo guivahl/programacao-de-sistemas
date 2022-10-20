@@ -1,9 +1,9 @@
 package vm.Components.Assembler;
 
-public class InstructionsWrapper {
+public class InstructionWrapper {
     private String binary;
     private int instructionSize;
-    public InstructionsWrapper(String binary, int instructionSize) {
+    public InstructionWrapper (String binary, int instructionSize) {
         this.binary = binary;
         this.instructionSize = instructionSize;
     }
