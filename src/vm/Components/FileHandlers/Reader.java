@@ -13,10 +13,11 @@ public class Reader {
     private FileReader fileReader;
     private BufferedReader bufferedReader;
     private String filename;
+    private Path path;
 
     public Reader(String filename) throws FileNotFoundException {
         this.filename = filename;
-        Path path = Path.of("src", "resources", filename);
+        this.path = Path.of("src", "resources", filename);
         fileReader = new FileReader(path.toAbsolutePath().toString());
         bufferedReader = new BufferedReader(fileReader);
     }
@@ -33,7 +34,6 @@ public class Reader {
 
     public String readFile() throws FileNotFoundException {
         String data = "";
-        Path path = Path.of("src", "resources", filename);
         try {
             File file = new File(path.toAbsolutePath().toString());
             Scanner scanner = new Scanner(file);
