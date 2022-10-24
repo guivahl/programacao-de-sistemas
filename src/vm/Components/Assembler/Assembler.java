@@ -1,6 +1,7 @@
 package vm.Components.Assembler;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,7 +43,7 @@ public class Assembler {
 
         try {
             secondPass();
-        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
             e.printStackTrace();
             System.out.println("Erro no processo do segundo passo do montador!");
         }
@@ -137,7 +138,7 @@ public class Assembler {
         }
     }
 
-    private void secondPass() throws FileNotFoundException {
+    private void secondPass() throws IOException {
         Reader reader = new Reader("MASMAPRG.ASM");
         Writer writer = new Writer("source-code.txt");
         String line = reader.readLine();
@@ -167,6 +168,7 @@ public class Assembler {
             }
             line = reader.readLine();
         }
+        writer.close();
     }
 
     private String parseStringToBinarySixteenBits(String binary) {

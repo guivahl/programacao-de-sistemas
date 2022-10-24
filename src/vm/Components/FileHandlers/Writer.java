@@ -7,20 +7,29 @@ import java.nio.file.Path;
 
 public class Writer {
 
-  private String filename;
+  private FileWriter fileWriter;
+  private BufferedWriter bufferedWriter;
   private Path path;
 
-  public Writer(String filename) {
-    Path path = Path.of("src", "resources", filename);
-    this.path = path;
-    this.filename = filename;
+  public Writer(String filename) throws IOException {
+    path = Path.of("src", "resources", filename);
+    fileWriter = new FileWriter(path.toAbsolutePath().toString(), true);
+    bufferedWriter = new BufferedWriter(fileWriter);
   }
 
   public void write(String arg) {
-    try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(path.toAbsolutePath().toString(), true))) { 
+    try { 
       bufferedWriter.write(arg);
     } catch(IOException e) {
         e.printStackTrace();
+    }
+  }
+
+  public void close() {
+    try {
+      bufferedWriter.close();
+    } catch (IOException e) {
+      e.printStackTrace();
     }
   }
     
