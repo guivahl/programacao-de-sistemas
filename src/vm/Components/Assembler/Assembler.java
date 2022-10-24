@@ -182,9 +182,15 @@ public class Assembler {
         return fullStr;
     }
 
+    /**
+     * O metodo setInstructionData popula um HashMap de instrucoes.
+     * 
+     * Cada instancia de um novo InstructionWrapper permite a chamada de 
+     * dois metodos a partir do value do HashMap de instrucoes:
+     * - getBinary: representacao da instrucao em binario (String)
+     * - getInstructionSize: tamanho da instrucao (int)
+     */
     private void setInstructionData() {
-        // key = str instruction
-        // value = str binary, int instructionSize
 
         // instrucoes de maquina
         instructionsMap.put("ADD", new InstructionWrapper("00010", 2));
