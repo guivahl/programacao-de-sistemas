@@ -18,10 +18,10 @@ public class Writer {
   }
 
   public void write(String arg) {
-    try { 
+    try {
       bufferedWriter.write(arg);
-    } catch(IOException e) {
-        e.printStackTrace();
+    } catch (IOException e) {
+      e.printStackTrace();
     }
   }
 
@@ -32,5 +32,13 @@ public class Writer {
       e.printStackTrace();
     }
   }
-    
+
+  public void newLine() {
+    try {
+      bufferedWriter.newLine();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+
 }
