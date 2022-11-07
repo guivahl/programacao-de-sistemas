@@ -9,7 +9,6 @@ import java.util.Scanner;
 import vm.Components.Logger.Logger;
 
 public class SourceCodeHandler {
-    private static final int WORD_SIZE = 16;
     private Logger logger;
 
     public SourceCodeHandler(Logger logger){
