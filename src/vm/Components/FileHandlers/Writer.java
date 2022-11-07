@@ -13,7 +13,7 @@ public class Writer {
 
   public Writer(String filename) throws IOException {
     path = Path.of("src", "resources", filename);
-    fileWriter = new FileWriter(path.toAbsolutePath().toString(), true);
+    fileWriter = new FileWriter(path.toAbsolutePath().toString(), false);
     bufferedWriter = new BufferedWriter(fileWriter);
   }
 
