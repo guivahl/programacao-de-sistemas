@@ -30,6 +30,7 @@ public class App implements ActionListener {
         this.logger = new Logger();
         this.memory = new Memory(logger);
         this.stack = new Stack(memory, 10);
+        this.assembler = new Assembler(this.logger);
 
         ArrayList<Register> registers = new ArrayList<Register>();
         this.programCounter = initializeRegister("PC", 16, registers);
@@ -58,9 +59,7 @@ public class App implements ActionListener {
     }
 
     private void run() {
-        this.logger.logMessage("starting running...", Logger.SUCCESS_MESSAGE);
-
-        this.assembler = new Assembler();
+        this.logger.logMessage("starting execution", Logger.SUCCESS_MESSAGE);
 
         // Lê o source code e inicializa a memória com o programa
         SourceCodeHandler reader = new SourceCodeHandler(logger);
@@ -79,7 +78,7 @@ public class App implements ActionListener {
     }
 
     private void mount(){
-        //TODO: iniciar montagem com assembler
+        this.assembler.assemble();
     }
 
     // listener pro botão de rodar programa
