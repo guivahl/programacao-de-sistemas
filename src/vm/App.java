@@ -7,33 +7,83 @@ import vm.Components.Register;
 import vm.Components.SourceCodeHandler;
 import vm.Components.Stack;
 import vm.Components.Assembler.Assembler;
+import vm.Components.*;
+import vm.Components.Logger.*;
 
-public class App {
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+public class App implements ActionListener {
+    private Logger logger;
+    private Memory memory;
+    private Stack stack;
+    private GUI gui;
+    private Register programCounter;
+    private Register stackPointer;
+    private Register accumulator;
+    private Register operationMode;
+    private Register instructionRegister;
+    private Register memoryAddressRegister;
+    private Assembler assembler;
+
+    public App(){
+        this.logger = new Logger();
+        this.memory = new Memory(logger);
+        this.stack = new Stack(memory, 10);
+        this.assembler = new Assembler(this.logger);
+
+        ArrayList<Register> registers = new ArrayList<Register>();
+        this.programCounter = initializeRegister("PC", 16, registers);
+        this.stackPointer = initializeRegister("SP", 16, registers);
+        this.accumulator = initializeRegister("ACC", 16, registers);
+        this.operationMode = initializeRegister("MOP", 8, registers);
+        this.instructionRegister = initializeRegister("RI", 16, registers);
+        this.memoryAddressRegister = initializeRegister("RE", 16, registers);
+
+        gui = new GUI(registers, memory, logger);
+        logger.logMessage("machine components initialized successfully", Logger.SUCCESS_MESSAGE);
+
+        gui.runBtn.addActionListener(this);
+        gui.mountBtn.addActionListener(this);
+    }
+
     public static void main(String[] args) throws Exception {
-        Memory memory = new Memory();
-        Stack stack = new Stack(memory, 10);
+        new App();
+    }
 
-        Register programCounter = new Register("PC", 16);
-        Register stackPointer = new Register("SP", 16);
-        Register accumulator = new Register("ACC", 16);
-        Register operationMode = new Register("MOP", 8);
-        Register instructionRegister = new Register("RI", 16);
-        Register memoryAddressRegister = new Register("RE", 16);
+    private static Register initializeRegister(String identifier, int size, ArrayList<Register> registerArray){
+        Register newRegister = new Register(identifier, size);
+        registerArray.add(newRegister);
 
-        Assembler assembler = new Assembler();
+        return newRegister;
+    }
+
+    private void run() {
+        this.logger.logMessage("starting execution", Logger.SUCCESS_MESSAGE);
 
         // Lê o source code e inicializa a memória com o programa
-        SourceCodeHandler reader = new SourceCodeHandler();
-        String data = reader.readFile("source-code.txt");
+        SourceCodeHandler reader = new SourceCodeHandler(logger);
+        String data;
+        data = reader.readFile("source-code.txt");
         ArrayList<String> words = reader.parseStringToWords(data);
-        for(String word : words) {
-            memory.pushValue(word);
+        if(data.length() > 0){
+            for(String word : words) {
+                memory.pushValue(word);
+            }
+        } else {
+            logger.logMessage("source code is empty", Logger.ATTENTION_MESSAGE);
         }
 
-        // testando
-        stack.push("0000000000000101");
-        System.out.println(memory.getValue(0));
-        System.out.println(stack.pop());
-        System.out.println(memory.getValue(0));
+        // TODO: chamar a classe Operations para executar código
+    }
+
+    private void mount(){
+        this.assembler.assemble();
+    }
+
+    // listener pro botão de rodar programa
+    public void actionPerformed(ActionEvent event) {
+        if(event.getActionCommand() == "run") this.run();
+        if(event.getActionCommand() == "mount") this.mount();
     }
 }
