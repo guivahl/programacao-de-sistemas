@@ -7,6 +7,7 @@ import vm.Components.Register;
 import vm.Components.SourceCodeHandler;
 import vm.Components.Stack;
 import vm.Components.Assembler.Assembler;
+import vm.Components.MacroProcessor.MacroProcessor;
 
 public class App {
     public static void main(String[] args) throws Exception {
@@ -20,13 +21,15 @@ public class App {
         Register instructionRegister = new Register("RI", 16);
         Register memoryAddressRegister = new Register("RE", 16);
 
+        MacroProcessor macroProcessor = new MacroProcessor("INPUTFILE.ASM");
         Assembler assembler = new Assembler();
+
 
         // Lê o source code e inicializa a memória com o programa
         SourceCodeHandler reader = new SourceCodeHandler();
         String data = reader.readFile("source-code.txt");
         ArrayList<String> words = reader.parseStringToWords(data);
-        for(String word : words) {
+        for (String word : words) {
             memory.pushValue(word);
         }
 
