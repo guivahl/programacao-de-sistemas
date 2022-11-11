@@ -28,9 +28,8 @@ public class Linker {
                 stReader = new Reader("symbol-table" + i + ".txt");
                 rtReader = new Reader("reference-table" + i + ".txt");
                 firstPass(scReader,stReader,rtReader, i);
-                secondPass();
         }
-
+        secondPass();
         finalSourceCode.forEach(word -> writer.write(word));
         writer.close();
     }
@@ -41,12 +40,16 @@ public class Linker {
         updateSourceCode(sourceCode);
     }
 
-    private void secondPass() {
+    private void secondPass() throws Exception {
         String binaryAddress;
         for(int i = 0; i < currentEndAddress;i++) {
             if(globalReferenceTable.containsKey(i)) {
-                binaryAddress = Integer.toBinaryString(globalSymbolTable.get(globalReferenceTable.get(i)));
-                finalSourceCode.set(i, padString(binaryAddress, WORD_SIZE));
+                if (globalSymbolTable.containsKey(globalReferenceTable.get(i))) {
+                    binaryAddress = Integer.toBinaryString(globalSymbolTable.get(globalReferenceTable.get(i)));
+                    finalSourceCode.set(i, binaryAddress);
+                } else {
+                    throw new Exception("\nSymbol not defined: " + globalReferenceTable.get(i));
+                }
             }
         }
     }
@@ -67,7 +70,10 @@ public class Linker {
                 //Adiciona entrada na GST com deslocamento necessario
                 globalSymbolTable.put(symbol, address+currentEndAddress);
             } else {
-                throw new Exception("Erro GST - SIMBOLO JA EXISTA NA TABELA DE SIMBOLOS - ARQUIVO "+ idFile +" - END: "+ address + " SIMB: " + symbol +" \n");
+                throw new Exception("\nGlobal Symbol Table:\n" +
+                        "Symbol already defined in another file\n" +
+                        "File: "+ idFile +" Address: "+ address + "\n" +
+                        "Symbol: " + symbol);
             }
         }
     }
@@ -96,7 +102,10 @@ public class Linker {
                 //Adiciona entrada a GFT com deslocamento necessario
                 globalReferenceTable.put(address+currentEndAddress,symbol);
             } else {
-                throw new Exception("Erro RST - JA EXISTE UMA REALOCAO NESSE ENDEREÇO - ARQUIVO "+ idFile +" - END: "+ address + " SIMB: " + symbol +"  \n");
+                throw new Exception("Global Reference Table:\n" +
+                        "Address already set for ANOTHER realocation.\n" +
+                        "File: "+ idFile +
+                        "\nAddress: "+ address + "\nSymbol: " + symbol);
             }
         }
     }
