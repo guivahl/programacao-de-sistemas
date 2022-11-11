@@ -46,7 +46,7 @@ public class Linker {
             if(globalReferenceTable.containsKey(i)) {
                 if (globalSymbolTable.containsKey(globalReferenceTable.get(i))) {
                     binaryAddress = Integer.toBinaryString(globalSymbolTable.get(globalReferenceTable.get(i)));
-                    finalSourceCode.set(i, binaryAddress);
+                    finalSourceCode.set(i, padString(binaryAddress, WORD_SIZE));
                 } else {
                     throw new Exception("\nSymbol not defined: " + globalReferenceTable.get(i));
                 }
