@@ -1,6 +1,5 @@
 package vm.Components.Linker;
 
-import vm.App;
 import vm.Components.FileHandlers.Reader;
 import vm.Components.FileHandlers.Writer;
 
@@ -14,10 +13,17 @@ public class Linker {
     private ArrayList<String> finalSourceCode = new ArrayList<String>();
     private HashMap<String, Integer> globalSymbolTable = new HashMap<>();
     private HashMap<Integer, String> globalReferenceTable = new HashMap<>();
+
+    private ArrayList<Boolean> referenceVector;
     private int currentEndAddress = 0;
     static private final int WORD_SIZE = 16;
 
-    public Linker(int baseAddress, int numFiles) throws Exception {
+    public Linker(int numFiles) throws Exception {
+        finalSourceCode = new ArrayList<>();
+        globalSymbolTable = new HashMap<>();
+        globalReferenceTable = new HashMap<>();
+        referenceVector = new ArrayList<>();
+
         Reader scReader;
         Reader stReader;
         Reader rtReader;
@@ -44,14 +50,18 @@ public class Linker {
         String binaryAddress;
         for(int i = 0; i < currentEndAddress;i++) {
             if(globalReferenceTable.containsKey(i)) {
+                referenceVector.add(true);
                 if (globalSymbolTable.containsKey(globalReferenceTable.get(i))) {
                     binaryAddress = Integer.toBinaryString(globalSymbolTable.get(globalReferenceTable.get(i)));
                     finalSourceCode.set(i, padString(binaryAddress, WORD_SIZE));
                 } else {
-                    throw new Exception("\nSymbol not defined: " + globalReferenceTable.get(i));
+                    throw new Exception("\nGlobal Symbol not defined: " + globalReferenceTable.get(i));
                 }
+            }  else{
+                referenceVector.add(false);
             }
         }
+        finalSourceCode.add(padString(Integer.toBinaryString(100),WORD_SIZE));
     }
 
     private String padString(String word, int padSize) {
@@ -108,6 +118,10 @@ public class Linker {
                         "\nAddress: "+ address + "\nSymbol: " + symbol);
             }
         }
+    }
+
+    public ArrayList<Boolean> getReferenceVector(){
+        return referenceVector;
     }
 
 }
