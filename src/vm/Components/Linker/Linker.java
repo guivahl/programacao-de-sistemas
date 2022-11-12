@@ -10,9 +10,9 @@ import java.util.HashMap;
 import java.util.List;
 
 public class Linker {
-    private ArrayList<String> finalSourceCode = new ArrayList<String>();
-    private HashMap<String, Integer> globalSymbolTable = new HashMap<>();
-    private HashMap<Integer, String> globalReferenceTable = new HashMap<>();
+    private ArrayList<String> finalSourceCode;
+    private HashMap<String, Integer> globalSymbolTable;
+    private HashMap<Integer, String> globalReferenceTable;
 
     private ArrayList<Boolean> referenceVector;
     private int currentEndAddress = 0;
