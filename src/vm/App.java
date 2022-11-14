@@ -10,6 +10,7 @@ import vm.Components.MacroProcessor.MacroProcessor;
 import vm.Components.Assembler.*;
 import vm.Components.*;
 import vm.Components.Logger.*;
+import vm.Components.CPU.Operations;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -29,6 +30,7 @@ public class App implements ActionListener {
     private Register memoryAddressRegister;
     private Assembler assembler;
     private MacroProcessor macroProcessor;
+    private Operations operations;
 
     public App() {
         this.logger = new Logger();
@@ -51,6 +53,9 @@ public class App implements ActionListener {
 
         gui.runBtn.addActionListener(this);
         gui.mountBtn.addActionListener(this);
+
+        //TODO: The interface must ask for the execution mode on the operationMode register.
+        this.operations = new Operations(memory, stack, programCounter, stackPointer, accumulator, operationMode, instructionRegister, memoryAddressRegister);
     }
 
     public static void main(String[] args) throws Exception {
@@ -82,7 +87,7 @@ public class App implements ActionListener {
             logger.logMessage("source code is empty", Logger.ATTENTION_MESSAGE);
         }
 
-        // TODO: chamar a classe Operations para executar código
+        operations.execute(10);
     }
 
     private void mount() {
