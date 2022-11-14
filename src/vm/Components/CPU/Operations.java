@@ -87,33 +87,69 @@ public class Operations {
         if (mode == 2){
             opd1 = Integer.parseInt(memory.getValue(Integer.parseInt(this.memoryAddressRegister.getValue(), 2)), 2);
         } else {
-            opd1 = Integer.parseInt(memory.getValue(index), 2) + 10;
+            opd1 = Integer.parseInt(memory.getValue(index), 2);
         }
         this.programCounter.setValue(parseIntToBinarySixteenBits(opd1));
         return null;
     }
 
     private Operations brnegInstruction(int mode){
-        System.out.println("Chamou brneg com " + mode);
+        this.instructionRegister.setValue("0000000000000101");
         int index = Integer.parseInt(this.programCounter.getValue(), 2);
-        index = index + 2;
-        this.programCounter.setValue(parseIntToBinarySixteenBits(index));
+        int opd1 = 0;
+        if (Integer.parseInt(this.accumulator.getValue(), 2) < 0){
+            index++;
+            this.memoryAddressRegister.setValue(memory.getValue(index));
+            if (mode == 2){
+                opd1 = Integer.parseInt(memory.getValue(Integer.parseInt(this.memoryAddressRegister.getValue(), 2)), 2);
+            } else {
+                opd1 = Integer.parseInt(memory.getValue(index), 2);
+            }
+            this.programCounter.setValue(parseIntToBinarySixteenBits(opd1));
+        } else {
+            index = index + 2;
+            this.programCounter.setValue(parseIntToBinarySixteenBits(index));
+        }
         return null;
     }
 
     private Operations brposInstruction(int mode){
-        System.out.println("Chamou brpos com " + mode);
+        this.instructionRegister.setValue("0000000000000100");
         int index = Integer.parseInt(this.programCounter.getValue(), 2);
-        index = index + 2;
-        this.programCounter.setValue(parseIntToBinarySixteenBits(index));
-    return null;
+        int opd1 = 0;
+        if (Integer.parseInt(this.accumulator.getValue(), 2) > 0){
+            index++;
+            this.memoryAddressRegister.setValue(memory.getValue(index));
+            if (mode == 2){
+                opd1 = Integer.parseInt(memory.getValue(Integer.parseInt(this.memoryAddressRegister.getValue(), 2)), 2);
+            } else {
+                opd1 = Integer.parseInt(memory.getValue(index), 2);
+            }
+            this.programCounter.setValue(parseIntToBinarySixteenBits(opd1));
+        } else {
+            index = index + 2;
+            this.programCounter.setValue(parseIntToBinarySixteenBits(index));
+        }
+        return null;
     }
 
     private Operations brzeroInstruction(int mode){
-        System.out.println("Chamou brzero com " + mode);
+        this.instructionRegister.setValue("0000000000000001");
         int index = Integer.parseInt(this.programCounter.getValue(), 2);
-        index = index + 2;
-        this.programCounter.setValue(parseIntToBinarySixteenBits(index));
+        int opd1 = 0;
+        if (Integer.parseInt(this.accumulator.getValue(), 2) == 0){
+            index++;
+            this.memoryAddressRegister.setValue(memory.getValue(index));
+            if (mode == 2){
+                opd1 = Integer.parseInt(memory.getValue(Integer.parseInt(this.memoryAddressRegister.getValue(), 2)), 2);
+            } else {
+                opd1 = Integer.parseInt(memory.getValue(index), 2);
+            }
+            this.programCounter.setValue(parseIntToBinarySixteenBits(opd1));
+        } else {
+            index = index + 2;
+            this.programCounter.setValue(parseIntToBinarySixteenBits(index));
+        }
         return null;
     }
     
@@ -248,8 +284,8 @@ public class Operations {
         operationsMap.put("0000000000010110", () -> subInstruction(2));
         operationsMap.put("0000000001000110", () -> subInstruction(3));
         operationsMap.put("0000000000001000", () -> writeInstruction(1));
-        operationsMap.put("0000000000001000", () -> writeInstruction(2));
-        operationsMap.put("0000000000001000", () -> writeInstruction(3));
+        operationsMap.put("0000000000011000", () -> writeInstruction(2));
+        operationsMap.put("0000000001001000", () -> writeInstruction(3));
     }
 
     /*
