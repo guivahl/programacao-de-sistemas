@@ -154,15 +154,23 @@ public class Operations {
     }
     
     private Operations callInstruction(int mode){
-        System.out.println("Chamou call com " + mode);
+        this.instructionRegister.setValue("0000000000001111");
         int index = Integer.parseInt(this.programCounter.getValue(), 2);
-        index = index + 2;
-        this.programCounter.setValue(parseIntToBinarySixteenBits(index));
+        this.stackPointer.setValue(this.programCounter.getValue());
+        int opd1 = 0;
+        index++;
+        this.memoryAddressRegister.setValue(memory.getValue(index));
+        if (mode == 2){
+            opd1 = Integer.parseInt(memory.getValue(Integer.parseInt(this.memoryAddressRegister.getValue(), 2)), 2);
+        } else {
+            opd1 = Integer.parseInt(memory.getValue(index), 2);
+        }
+        this.programCounter.setValue(parseIntToBinarySixteenBits(opd1));
         return null;
     }
 
-    private Operations copyInstruction(int mode){//1 direto-direto, 2 direto,indireto, 3 direto-imediato, 4 indireto-direto, 5 indireto-indireto, 6 indireto-imediato
-        System.out.println("Chamou copy com " + mode);
+    private Operations copyInstruction(int mode1, int mode2){
+        System.out.println("Chamou copy com " + mode1);
         int index = Integer.parseInt(this.programCounter.getValue(), 2);
         index = index + 3;
         this.programCounter.setValue(parseIntToBinarySixteenBits(index));
@@ -259,12 +267,12 @@ public class Operations {
         operationsMap.put("0000000000010100", () -> brzeroInstruction(2));
         operationsMap.put("0000000000001111", () -> callInstruction(1));
         operationsMap.put("0000000000011111", () -> callInstruction(2));
-        operationsMap.put("0000000000001101", () -> copyInstruction(1));
-        operationsMap.put("0000000000101101", () -> copyInstruction(2));
-        operationsMap.put("0000000001001101", () -> copyInstruction(3));
-        operationsMap.put("0000000000011101", () -> copyInstruction(4));
-        operationsMap.put("0000000000111101", () -> copyInstruction(5));
-        operationsMap.put("0000000001011101", () -> copyInstruction(6));
+        operationsMap.put("0000000000001101", () -> copyInstruction(1, 1));
+        operationsMap.put("0000000000101101", () -> copyInstruction(1, 2));
+        operationsMap.put("0000000001001101", () -> copyInstruction(1, 3));
+        operationsMap.put("0000000000011101", () -> copyInstruction(2, 1));
+        operationsMap.put("0000000000111101", () -> copyInstruction(2, 2));
+        operationsMap.put("0000000001011101", () -> copyInstruction(2, 3));
         operationsMap.put("0000000000001010", () -> divideInstruction(1));
         operationsMap.put("0000000000011010", () -> divideInstruction(2));
         operationsMap.put("0000000001001010", () -> divideInstruction(3));
