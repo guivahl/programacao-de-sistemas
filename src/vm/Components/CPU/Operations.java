@@ -150,10 +150,10 @@ public class Operations {
         return null;
     }
     
-    private Operations callInstruction(int mode){
+    private Operations callInstruction(int mode) throws Exception{
         this.instructionRegister.setValue("0000000000001111");
         int index = Integer.parseInt(this.programCounter.getValue(), 2);
-        this.stackPointer.setValue(this.programCounter.getValue());
+        this.stack.push(this.programCounter.getValue());
         int opd1;
         index++;
         this.memoryAddressRegister.setValue(memory.getValue(index));
@@ -282,11 +282,10 @@ public class Operations {
         return null;
     }
 
-    private Operations retInstruction(){
-        System.out.println("Chamou ret");
-        int index = Integer.parseInt(this.programCounter.getValue(), 2);
-        index++;
-        this.programCounter.setValue(parseIntToBinarySixteenBits(index));
+    private Operations retInstruction() throws Exception{
+        this.instructionRegister.setValue("0000000000001001");
+        this.programCounter.setValue(this.stack.pop());
+        
         return null;
     }
 
@@ -351,8 +350,20 @@ public class Operations {
         operationsMap.put("0000000000010001", () -> brposInstruction(2));
         operationsMap.put("0000000000000100", () -> brzeroInstruction(1));
         operationsMap.put("0000000000010100", () -> brzeroInstruction(2));
-        operationsMap.put("0000000000001111", () -> callInstruction(1));
-        operationsMap.put("0000000000011111", () -> callInstruction(2));
+        operationsMap.put("0000000000001111", () -> {
+            try {
+                callInstruction(1);//Tentei muito e não consegui lançar a exceção de outra forma, vou esperar a ajuda de vocês no PR
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        operationsMap.put("0000000000011111", () -> {
+            try {
+                callInstruction(2);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
         operationsMap.put("0000000000001101", () -> copyInstruction(1, 1));
         operationsMap.put("0000000000101101", () -> copyInstruction(1, 2));
         operationsMap.put("0000000001001101", () -> copyInstruction(1, 3));
@@ -370,7 +381,13 @@ public class Operations {
         operationsMap.put("0000000001001110", () -> multInstruction(3));
         operationsMap.put("0000000000001100", () -> readInstruction(1));
         operationsMap.put("0000000000011100", () -> readInstruction(2));
-        operationsMap.put("0000000000001001", () -> retInstruction());
+        operationsMap.put("0000000000001001", () -> {
+            try {
+                retInstruction();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
         operationsMap.put("0000000000001011", () -> stopInstruction());
         operationsMap.put("0000000000000111", () -> storeInstruction(1));
         operationsMap.put("0000000000010111", () -> storeInstruction(2));
