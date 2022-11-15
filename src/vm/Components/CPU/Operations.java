@@ -54,19 +54,17 @@ public class Operations {
         in.close();
     }
 
-    private Operations addInstruction(int mode){//1 direto, 2 indireto, 3 imediato
+    private Operations addInstruction(int mode){
          this.instructionRegister.setValue("0000000000000010");
          int index = Integer.parseInt(this.programCounter.getValue(), 2);
          int opd1;
          index++;
          this.memoryAddressRegister.setValue(memory.getValue(index));
         if (mode == 2){
-            //Get the value that are pointed by the value that are in memory position indicated by index
             opd1 = Integer.parseInt(memory.getValue(Integer.parseInt(memory.getValue(Integer.parseInt(this.memoryAddressRegister.getValue(), 2)), 2)), 2);
         } else if (mode == 3) {
             opd1 = Integer.parseInt(this.memoryAddressRegister.getValue(), 2);
         } else {
-            //Get the value that are in memory position indicated by index
             opd1 = Integer.parseInt(memory.getValue(Integer.parseInt(this.memoryAddressRegister.getValue(), 2) + 10), 2);
         }
         this.accumulator.setValue(parseIntToBinarySixteenBits(Integer.parseInt(this.accumulator.getValue(), 2) + opd1));
@@ -75,7 +73,7 @@ public class Operations {
         return null;
     }
 
-    private Operations brInstruction(int mode){//1 direto, 2 indireto
+    private Operations brInstruction(int mode){
         this.instructionRegister.setValue("0000000000000000");
         int index = Integer.parseInt(this.programCounter.getValue(), 2);
         int opd1;
@@ -181,12 +179,10 @@ public class Operations {
         index++;
         this.memoryAddressRegister.setValue(memory.getValue(index));
         if (mode2 == 2){
-            //Get the value that are pointed by the value that are in memory position indicated by index
             opd2 = Integer.parseInt(memory.getValue(Integer.parseInt(memory.getValue(Integer.parseInt(this.memoryAddressRegister.getValue(), 2)), 2)), 2);
         } else if (mode2 == 3) {
             opd2 = Integer.parseInt(this.memoryAddressRegister.getValue(), 2);
         } else {
-            //Get the value that are in memory position indicated by index
             opd2 = Integer.parseInt(memory.getValue(Integer.parseInt(this.memoryAddressRegister.getValue(), 2) + 10), 2);
         }
 
@@ -203,12 +199,10 @@ public class Operations {
          index++;
          this.memoryAddressRegister.setValue(memory.getValue(index));
         if (mode == 2){
-            //Get the value that are pointed by the value that are in memory position indicated by index
             opd1 = Integer.parseInt(memory.getValue(Integer.parseInt(memory.getValue(Integer.parseInt(this.memoryAddressRegister.getValue(), 2)), 2)), 2);
         } else if (mode == 3) {
             opd1 = Integer.parseInt(this.memoryAddressRegister.getValue(), 2);
         } else {
-            //Get the value that are in memory position indicated by index
             opd1 = Integer.parseInt(memory.getValue(Integer.parseInt(this.memoryAddressRegister.getValue(), 2)), 2);
         }
         this.accumulator.setValue(parseIntToBinarySixteenBits((int)(Integer.parseInt(this.accumulator.getValue(), 2) / opd1)));
@@ -224,12 +218,10 @@ public class Operations {
          index++;
          this.memoryAddressRegister.setValue(memory.getValue(index));
         if (mode == 2){
-            //Get the value that are pointed by the value that are in memory position indicated by index
             opd1 = Integer.parseInt(memory.getValue(Integer.parseInt(memory.getValue(Integer.parseInt(this.memoryAddressRegister.getValue(), 2)), 2)), 2);
         } else if (mode == 3) {
             opd1 = Integer.parseInt(this.memoryAddressRegister.getValue(), 2);
         } else {
-            //Get the value that are in memory position indicated by index
             opd1 = Integer.parseInt(memory.getValue(Integer.parseInt(this.memoryAddressRegister.getValue(), 2) + 10), 2);
         }
         this.accumulator.setValue(parseIntToBinarySixteenBits(opd1));
@@ -245,12 +237,10 @@ public class Operations {
          index++;
          this.memoryAddressRegister.setValue(memory.getValue(index));
         if (mode == 2){
-            //Get the value that are pointed by the value that are in memory position indicated by index
             opd1 = Integer.parseInt(memory.getValue(Integer.parseInt(memory.getValue(Integer.parseInt(this.memoryAddressRegister.getValue(), 2)), 2)), 2);
         } else if (mode == 3) {
             opd1 = Integer.parseInt(this.memoryAddressRegister.getValue(), 2);
         } else {
-            //Get the value that are in memory position indicated by index
             opd1 = Integer.parseInt(memory.getValue(Integer.parseInt(this.memoryAddressRegister.getValue(), 2)), 2);
         }
         this.accumulator.setValue(parseIntToBinarySixteenBits(Integer.parseInt(this.accumulator.getValue(), 2) * opd1));
@@ -331,9 +321,20 @@ public class Operations {
     }
 
     private Operations writeInstruction(int mode){
-        System.out.println("Chamou write com " + mode);
-        int index = Integer.parseInt(this.programCounter.getValue(), 2);
-        index = index + 2;
+        this.instructionRegister.setValue("0000000000000110");
+         int index = Integer.parseInt(this.programCounter.getValue(), 2);
+         int opd1;
+         index++;
+         this.memoryAddressRegister.setValue(memory.getValue(index));
+         if (mode == 2){
+            opd1 = Integer.parseInt(memory.getValue(Integer.parseInt(memory.getValue(Integer.parseInt(this.memoryAddressRegister.getValue(), 2)), 2)), 2);
+        } else if (mode == 3) {
+            opd1 = Integer.parseInt(this.memoryAddressRegister.getValue(), 2);
+        } else {
+            opd1 = Integer.parseInt(memory.getValue(Integer.parseInt(this.memoryAddressRegister.getValue(), 2) + 10), 2);
+        }
+        System.out.println("Output stream (While we don't put this on interface)!) " + opd1);
+        index++;
         this.programCounter.setValue(parseIntToBinarySixteenBits(index));
         return null;
     }
