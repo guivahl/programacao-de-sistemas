@@ -5,9 +5,6 @@ import vm.Components.Stack;
 import vm.Components.Register;
 import java.util.Map;
 import java.util.Scanner;
-
-import javax.sound.sampled.SourceDataLine;
-
 import java.util.HashMap;
 
 public class Operations {
@@ -21,6 +18,7 @@ public class Operations {
     private Stack stack;
     private Map<String, Runnable> operationsMap;
     private boolean stopCondition;
+    private Scanner in;
 
     public Operations(Memory memory, Stack stack, Register programCounter, Register stackPointer,
                         Register accumulator, Register operationMode, Register instructionRegister,
@@ -41,7 +39,7 @@ public class Operations {
     }
 
     public void execute(int initialAddress){ 
-        Scanner in = new Scanner(System.in);
+        in = new Scanner(System.in);
         this.programCounter.setValue(parseIntToBinarySixteenBits(initialAddress));
         while (stopCondition){
             System.out.println("Instrução = " + memory.getValue(Integer.parseInt(this.programCounter.getValue(), 2)));
@@ -50,7 +48,6 @@ public class Operations {
                 in.nextLine();
             }
             
-            //instructionRegister.setValue(memory.getValue(Integer.parseInt(this.programCounter.getValue())));
             operationsMap.get(memory.getValue(Integer.parseInt(this.programCounter.getValue(), 2))).run();
 
         }
@@ -221,9 +218,22 @@ public class Operations {
     }
 
     private Operations loadInstruction(int mode){
-        System.out.println("Chamou load com " + mode);
-        int index = Integer.parseInt(this.programCounter.getValue(), 2);
-        index = index + 2;
+        this.instructionRegister.setValue("0000000000000011");
+         int index = Integer.parseInt(this.programCounter.getValue(), 2);
+         int opd1;
+         index++;
+         this.memoryAddressRegister.setValue(memory.getValue(index));
+        if (mode == 2){
+            //Get the value that are pointed by the value that are in memory position indicated by index
+            opd1 = Integer.parseInt(memory.getValue(Integer.parseInt(memory.getValue(Integer.parseInt(this.memoryAddressRegister.getValue(), 2)), 2)), 2);
+        } else if (mode == 3) {
+            opd1 = Integer.parseInt(this.memoryAddressRegister.getValue(), 2);
+        } else {
+            //Get the value that are in memory position indicated by index
+            opd1 = Integer.parseInt(memory.getValue(Integer.parseInt(this.memoryAddressRegister.getValue(), 2) + 10), 2);
+        }
+        this.accumulator.setValue(parseIntToBinarySixteenBits(opd1));
+        index++;
         this.programCounter.setValue(parseIntToBinarySixteenBits(index));
         return null;
     }
@@ -250,21 +260,23 @@ public class Operations {
     }
 
     private Operations readInstruction(int mode){
+        System.out.println("Inform the input stream value: (While we don't put this on interface)!");
+        int inputStream = in.nextInt();
+        in.nextLine();
+
         this.instructionRegister.setValue("0000000000001100");
          int index = Integer.parseInt(this.programCounter.getValue(), 2);
          int opd1;
          index++;
          this.memoryAddressRegister.setValue(memory.getValue(index));
-        if (mode == 2){
-            //Get the value that are pointed by the value that are in memory position indicated by index
-            opd1 = Integer.parseInt(memory.getValue(Integer.parseInt(memory.getValue(Integer.parseInt(this.memoryAddressRegister.getValue(), 2)), 2)), 2);
-        } else if (mode == 3) {
-            opd1 = Integer.parseInt(this.memoryAddressRegister.getValue(), 2);
+
+         if (mode == 2){
+            opd1 = Integer.parseInt(memory.getValue(Integer.parseInt(this.memoryAddressRegister.getValue(), 2)), 2);
         } else {
-            //Get the value that are in memory position indicated by index
-            opd1 = Integer.parseInt(memory.getValue(Integer.parseInt(this.memoryAddressRegister.getValue(), 2) + 10), 2);
+            opd1 = Integer.parseInt(this.memoryAddressRegister.getValue(), 2) + 10;
         }
-        this.accumulator.setValue(parseIntToBinarySixteenBits(opd1));
+
+        memory.setValue(opd1, parseIntToBinarySixteenBits(inputStream));
         index++;
         this.programCounter.setValue(parseIntToBinarySixteenBits(index));
         return null;
@@ -304,7 +316,8 @@ public class Operations {
             opd1 = Integer.parseInt(this.memoryAddressRegister.getValue(), 2);
         } else {
             //Get the value that are in memory position indicated by index
-            opd1 = Integer.parseInt(memory.getValue(Integer.parseInt(this.memoryAddressRegister.getValue(), 2) + 10), 2);        }
+            opd1 = Integer.parseInt(memory.getValue(Integer.parseInt(this.memoryAddressRegister.getValue(), 2)), 2);
+        }
         this.accumulator.setValue(parseIntToBinarySixteenBits(Integer.parseInt(this.accumulator.getValue(), 2) - opd1));
         index++;
         this.programCounter.setValue(parseIntToBinarySixteenBits(index));
