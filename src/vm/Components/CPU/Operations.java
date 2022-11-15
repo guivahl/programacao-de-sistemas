@@ -9,7 +9,7 @@ import java.util.HashMap;
 
 public class Operations {
     private Register programCounter;
-    private Register stackPointer;
+    private Register stackPointer;//If the stack does the increment and decrement automatically, this may not be used (functions does push/pop)
     private Register accumulator;
     private Register operationMode;
     private Register instructionRegister;
@@ -33,7 +33,7 @@ public class Operations {
         this.instructionRegister = instructionRegister;
         this.memoryAddressRegister = memoryAddressRegister;
         this.stopCondition = true;
-        this.operationMode.setValue("00000001");
+        this.operationMode.setValue("00000000");//This must be entered in the interface in the main and send in the constructor.
         this.operationsMap = new HashMap<>();
         setOperationData();
     }
@@ -44,7 +44,7 @@ public class Operations {
         while (stopCondition){
             System.out.println("Instrução = " + memory.getValue(Integer.parseInt(this.programCounter.getValue(), 2)));
             printMemory();
-            if (Integer.parseInt(this.operationMode.getValue(), 2) != 0){
+            if (Integer.parseInt(this.operationMode.getValue(), 2) == 1){
                 in.nextLine();
             }
             
@@ -172,21 +172,21 @@ public class Operations {
         this.memoryAddressRegister.setValue(memory.getValue(index));
 
         if (mode1 == 2){
-            opd1 = Integer.parseInt(memory.getValue(Integer.parseInt(this.memoryAddressRegister.getValue(), 2)), 2);
+            opd1 = Integer.parseInt(memory.getValue(Integer.parseInt(memory.getValue(Integer.parseInt(this.memoryAddressRegister.getValue(), 2)), 2)), 2);
+        } else if (mode1 == 3) {
+            opd1 = Integer.parseInt(this.memoryAddressRegister.getValue(), 2);
         } else {
-            opd1 = Integer.parseInt(this.memoryAddressRegister.getValue(), 2) + 10;
+            opd1 = Integer.parseInt(this.memory.getValue(Integer.parseInt(this.memoryAddressRegister.getValue() ,2) + 10), 2);
         }
         index++;
         this.memoryAddressRegister.setValue(memory.getValue(index));
         if (mode2 == 2){
-            opd2 = Integer.parseInt(memory.getValue(Integer.parseInt(memory.getValue(Integer.parseInt(this.memoryAddressRegister.getValue(), 2)), 2)), 2);
-        } else if (mode2 == 3) {
-            opd2 = Integer.parseInt(this.memoryAddressRegister.getValue(), 2);
+            opd2 = Integer.parseInt(memory.getValue(Integer.parseInt(this.memoryAddressRegister.getValue(), 2)), 2);
         } else {
-            opd2 = Integer.parseInt(memory.getValue(Integer.parseInt(this.memoryAddressRegister.getValue(), 2) + 10), 2);
+            opd2 = Integer.parseInt(this.memoryAddressRegister.getValue(), 2) + 10;
         }
 
-        memory.setValue(opd1, parseIntToBinarySixteenBits(opd2));
+        memory.setValue(opd2, parseIntToBinarySixteenBits(opd1));
         index++;
         this.programCounter.setValue(parseIntToBinarySixteenBits(index));
         return null;
@@ -312,7 +312,7 @@ public class Operations {
         } else if (mode == 3) {
             opd1 = Integer.parseInt(this.memoryAddressRegister.getValue(), 2);
         } else {
-            opd1 = Integer.parseInt(memory.getValue(Integer.parseInt(this.memoryAddressRegister.getValue(), 2)), 2);
+            opd1 = Integer.parseInt(memory.getValue(Integer.parseInt(this.memoryAddressRegister.getValue(), 2) + 10), 2);
         }
         this.accumulator.setValue(parseIntToBinarySixteenBits(Integer.parseInt(this.accumulator.getValue(), 2) - opd1));
         index++;
@@ -321,6 +321,9 @@ public class Operations {
     }
 
     private Operations writeInstruction(int mode){
+        if (Integer.parseInt(this.operationMode.getValue(), 2) == 2){
+            in.nextLine();
+        }
         this.instructionRegister.setValue("0000000000000110");
          int index = Integer.parseInt(this.programCounter.getValue(), 2);
          int opd1;
@@ -373,11 +376,11 @@ public class Operations {
             }
         });
         operationsMap.put("0000000000001101", () -> copyInstruction(1, 1));
-        operationsMap.put("0000000000101101", () -> copyInstruction(1, 2));
-        operationsMap.put("0000000001001101", () -> copyInstruction(1, 3));
-        operationsMap.put("0000000000011101", () -> copyInstruction(2, 1));
+        operationsMap.put("0000000000101101", () -> copyInstruction(2, 1));
+        operationsMap.put("0000000001001101", () -> copyInstruction(3, 1));
+        operationsMap.put("0000000000011101", () -> copyInstruction(1, 2));
         operationsMap.put("0000000000111101", () -> copyInstruction(2, 2));
-        operationsMap.put("0000000001011101", () -> copyInstruction(2, 3));
+        operationsMap.put("0000000001011101", () -> copyInstruction(3, 2));
         operationsMap.put("0000000000001010", () -> divideInstruction(1));
         operationsMap.put("0000000000011010", () -> divideInstruction(2));
         operationsMap.put("0000000001001010", () -> divideInstruction(3));
@@ -417,22 +420,31 @@ public class Operations {
         String binary;
         String fullStr;
         String zeroes = "";
+        String signal;
+
+        if (transform < 0){
+            signal = "-";
+            transform *= (-1);
+        } else {
+            signal = "0";
+        }
 
         binary = Integer.toBinaryString(transform);
     
-        for (int i = 0; i < 16 - binary.length(); i++) {
+        for (int i = 0; i < 15 - binary.length(); i++) {
             zeroes += "0";
         }
     
-        fullStr = zeroes + binary;
+        fullStr = signal + zeroes + binary;
         return fullStr;
     }
 
     private void printMemory(){
         for (int i = 10; i<49; i++)
-            System.out.println(memory.getValue(i));
+            System.out.println("pos" + (i-10) + ": " + memory.getValue(i));
         
         System.out.println("ACC = " + this.accumulator.getValue());
+        System.out.println("ACC = " + Integer.parseInt(this.accumulator.getValue(), 2));
         System.out.println("PC = " + Integer.parseInt(this.programCounter.getValue(), 2));
     }
 
