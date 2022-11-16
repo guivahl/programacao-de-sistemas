@@ -2,6 +2,7 @@ package vm.Components.CPU;
 
 import vm.Components.Memory;
 import vm.Components.Stack;
+import vm.Components.Logger.Logger;
 import vm.Components.Register;
 import java.util.Map;
 import java.util.Scanner;
@@ -19,10 +20,11 @@ public class Operations {
     private Map<String, Runnable> operationsMap;
     private boolean stopCondition;
     private Scanner in;
+    private Logger logger;
 
     public Operations(Memory memory, Stack stack, Register programCounter, Register stackPointer,
                         Register accumulator, Register operationMode, Register instructionRegister,
-                        Register memoryAddressRegister)
+                        Register memoryAddressRegister, Logger logger)
     {
         this.memory = memory;
         this.stack = stack;
@@ -33,8 +35,9 @@ public class Operations {
         this.instructionRegister = instructionRegister;
         this.memoryAddressRegister = memoryAddressRegister;
         this.stopCondition = true;
-        this.operationMode.setValue("00000000");//This must be entered in the interface in the main and send in the constructor.
+        this.operationMode.setValue("00000010");//This must be entered in the interface in the main and send in the constructor.
         this.operationsMap = new HashMap<>();
+        this.logger = logger;
         setOperationData();
     }
 
@@ -336,7 +339,7 @@ public class Operations {
         } else {
             opd1 = Integer.parseInt(memory.getValue(Integer.parseInt(this.memoryAddressRegister.getValue(), 2) + 10), 2);
         }
-        System.out.println("Output stream (While we don't put this on interface)!) " + opd1);
+        logger.logMessage("Output stream (While we don't put this on interface)!) " + opd1, Logger.SUCCESS_MESSAGE);
         index++;
         this.programCounter.setValue(parseIntToBinarySixteenBits(index));
         return null;
@@ -366,6 +369,7 @@ public class Operations {
                 callInstruction(1);//Tentei muito e não consegui lançar a exceção de outra forma, vou esperar a ajuda de vocês no PR
             } catch (Exception e) {
                 e.printStackTrace();
+                this.logger.logMessage("Stack overflow, while operating", Logger.ERROR_MESSAGE);
             }
         });
         operationsMap.put("0000000000011111", () -> {
@@ -373,6 +377,7 @@ public class Operations {
                 callInstruction(2);
             } catch (Exception e) {
                 e.printStackTrace();
+                this.logger.logMessage("Stack overflow, while operating", Logger.ERROR_MESSAGE);
             }
         });
         operationsMap.put("0000000000001101", () -> copyInstruction(1, 1));
@@ -397,6 +402,7 @@ public class Operations {
                 retInstruction();
             } catch (Exception e) {
                 e.printStackTrace();
+                this.logger.logMessage("Empty stack", Logger.ERROR_MESSAGE);
             }
         });
         operationsMap.put("0000000000001011", () -> stopInstruction());

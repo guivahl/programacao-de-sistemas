@@ -55,7 +55,7 @@ public class App implements ActionListener {
         gui.mountBtn.addActionListener(this);
 
         //TODO: The interface must ask for the execution mode on the operationMode register.
-        this.operations = new Operations(memory, stack, programCounter, stackPointer, accumulator, operationMode, instructionRegister, memoryAddressRegister);
+        this.operations = new Operations(memory, stack, programCounter, stackPointer, accumulator, operationMode, instructionRegister, memoryAddressRegister, logger);
     }
 
     public static void main(String[] args) throws Exception {
@@ -103,9 +103,8 @@ public class App implements ActionListener {
 
     // listener pro botão de rodar programa
     public void actionPerformed(ActionEvent event) {
-        if (event.getActionCommand() == "run")
-            this.run();
-        if (event.getActionCommand() == "mount")
-            this.mount();
+        if(event.getActionCommand() == "run") this.run();
+        if(event.getActionCommand() == "mount") this.mount();
+
     }
 }
