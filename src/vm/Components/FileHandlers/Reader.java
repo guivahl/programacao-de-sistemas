@@ -12,12 +12,10 @@ public class Reader {
 
     private FileReader fileReader;
     private BufferedReader bufferedReader;
-    private String filename;
     private Path path;
 
     public Reader(String filename) throws FileNotFoundException {
-        this.filename = filename;
-        this.path = Path.of("src", "resources", filename);
+        path = Path.of("src", "resources", filename);
         fileReader = new FileReader(path.toAbsolutePath().toString());
         bufferedReader = new BufferedReader(fileReader);
     }

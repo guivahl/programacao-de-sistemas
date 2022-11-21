@@ -1,11 +1,13 @@
 package vm.Components.Assembler;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 import vm.Components.FileHandlers.Reader;
 import vm.Components.FileHandlers.Writer;
+import vm.Components.Logger.Logger;
 
 public class Assembler {
     private static final int LINE_MAX_PARAMS = 4;
@@ -18,14 +20,15 @@ public class Assembler {
     private int lineCounter;
     private Map<String, InstructionWrapper> instructionsMap;
     private Map<String, Integer> symbolTable;
+    private Logger logger;
 
-    public Assembler() {
+    public Assembler(Logger logger) {
         addressCounter = 0;
         lineCounter = 1;
         instructionsMap = new HashMap<>();
         symbolTable = new HashMap<>();
+        this.logger = logger;
         setInstructionData();
-        assemble();
     }
 
     public void assemble() {
@@ -37,14 +40,14 @@ public class Assembler {
         } catch (AssemblerException e) {
             return;
         } finally {
-            System.out.println(symbolTable);
+            symbolTable.forEach((key, value) ->  logger.logMessage(key + ":" + value, Logger.SUCCESS_MESSAGE));
         }
 
         try {
             secondPass();
-        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
             e.printStackTrace();
-            System.out.println("Erro no processo do segundo passo do montador!");
+            logger.logMessage("Error on second step of assembler!", Logger.ERROR_MESSAGE);
         }
     }
 
@@ -60,12 +63,12 @@ public class Assembler {
         while (line != null) {
 
             if (line.length() > LINE_MAX_LENGTH) {
-                throw new AssemblerException("Assembler Exception: Invalid input at line " + lineCounter + ". Lines should have a maximum length of 80 characters.");
+                throw new AssemblerException("Assembler Exception: Invalid input at line " + lineCounter + ". Lines should have a maximum length of 80 characters.", this.logger);
             }
 
             String [] params = line.split(" ");
             if (params.length > LINE_MAX_PARAMS) {
-                throw new AssemblerException("Assembler Exception: Syntax error at line " + lineCounter + ". Too many parameters.");
+                throw new AssemblerException("Assembler Exception: Syntax error at line " + lineCounter + ". Too many parameters.", this.logger);
             }
 
             for (String param : params) {
@@ -76,11 +79,11 @@ public class Assembler {
                 if (param.replace("@", "").matches("^\\d+$")) {
                     // testa se pode ser representado com 16 bits
                     if (Long.valueOf(param) > PARAM_MAX_VALUE) {
-                        throw new AssemblerException("Assembler Exception: Value (" + param + ") out of bounds at line " + lineCounter + ". Constant is larger than 16 bits.");
+                        throw new AssemblerException("Assembler Exception: Value (" + param + ") out of bounds at line " + lineCounter + ". Constant is larger than 16 bits.", this.logger);
                     }
                 // caso nao seja constante, testa se o simbolo comeca com uma letra
                 } else if (!param.matches(REGEX_STARTS_WITH_LETTER)) {
-                    throw new AssemblerException("Assembler Exception: Invalid argument (" + param + ") at line " + lineCounter + ". Symbols should start with a letter.");
+                    throw new AssemblerException("Assembler Exception: Invalid argument (" + param + ") at line " + lineCounter + ". Symbols should start with a letter.", this.logger);
                 }
 
                 // caso o parametro seja uma instrucao
@@ -90,7 +93,7 @@ public class Assembler {
                 } else if (!instructionsMap.containsKey(param) && param.matches(REGEX_STARTS_WITH_LETTER)) {
 
                     if (param.length() > PARAM_MAX_LENGTH) {
-                        throw new AssemblerException("Assembler Exception: Invalid argument (" + param + ") at line " + lineCounter + ". Symbol should have a maximum length of 8 characters.");
+                        throw new AssemblerException("Assembler Exception: Invalid argument (" + param + ") at line " + lineCounter + ". Symbol should have a maximum length of 8 characters.", this.logger);
                     }
 
                     // caso o simbolo esteja sendo definido, address recebe o contador de endereco da definicao
@@ -117,7 +120,7 @@ public class Assembler {
                     } else if (symbolTable.get(param) != 0) {
                         // se o simbolo estiver sendo redefinido, joga uma exception
                         if (param == params[0]) {
-                            throw new AssemblerException("Assembler Exception: Invalid argument (" + param + ") at line " + lineCounter + ". Symbol is already defined.");
+                            throw new AssemblerException("Assembler Exception: Invalid argument (" + param + ") at line " + lineCounter + ". Symbol is already defined.", this.logger);
                         }
                     }
 
@@ -132,12 +135,12 @@ public class Assembler {
         // testa se algum simbolo nao foi definido ao final do primeiro passo
         for (String key : symbolTable.keySet()) {
             if (symbolTable.get(key) == 0) {
-                throw new AssemblerException("Assembler Exception: Missing arguments at input. Found undefined symbols at the end of the first pass.");
+                throw new AssemblerException("Assembler Exception: Missing arguments at input. Found undefined symbols at the end of the first pass.", this.logger);
             }
         }
     }
 
-    private void secondPass() throws FileNotFoundException {
+    private void secondPass() throws IOException {
         Reader reader = new Reader("MASMAPRG.ASM");
         Writer writer = new Writer("source-code.txt");
         String line = reader.readLine();
@@ -167,6 +170,7 @@ public class Assembler {
             }
             line = reader.readLine();
         }
+        writer.close();
     }
 
     private String parseStringToBinarySixteenBits(String binary) {
@@ -182,9 +186,15 @@ public class Assembler {
         return fullStr;
     }
 
+    /**
+     * O metodo setInstructionData popula um HashMap de instrucoes.
+     * 
+     * Cada instancia de um novo InstructionWrapper permite a chamada de 
+     * dois metodos a partir do value do HashMap de instrucoes:
+     * - getBinary: representacao da instrucao em binario (String)
+     * - getInstructionSize: tamanho da instrucao (int)
+     */
     private void setInstructionData() {
-        // key = str instruction
-        // value = str binary, int instructionSize
 
         // instrucoes de maquina
         instructionsMap.put("ADD", new InstructionWrapper("00010", 2));
