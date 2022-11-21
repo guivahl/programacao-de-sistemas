@@ -86,10 +86,6 @@ public class MacroProcessor {
                     }
                     ArrayList<String> macroInstructions =
                             macros.get(j).replaceParameters(macroParameters);
-                    // Use the Macro.expandNestedMacros method to add the possible outer macro
-                    // parameters in the nested macros
-                    // The nested macros will be added to the end of the list of macros so it can be
-                    // called in the next "i" iterations
                     macros.addAll(macros.get(j).expandNestedMacros(macroParameters));
                     macrosSize += macros.get(j).getNestedMacros().size();
 
