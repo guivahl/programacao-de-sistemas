@@ -11,9 +11,14 @@ public class MacroProcessor {
     ArrayList<Macro> macros = new ArrayList<>();
     ArrayList<String> originalData = new ArrayList<>();
     Reader reader;
+    String filename;
 
-    public MacroProcessor(String fileName) throws FileNotFoundException, IOException {
-        reader = new Reader(fileName);
+    public MacroProcessor(String fileName) {
+        this.filename = fileName;
+    }
+
+    public void run() throws FileNotFoundException, IOException {
+        reader = new Reader(this.filename);
         storeMacros();
         replaceMacros();
         writeOutputFile("MASMAPRG.ASM");
