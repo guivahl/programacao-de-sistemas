@@ -6,15 +6,15 @@ import java.util.List;
 public class Register {
     private final List<Integer> SIZE_OPTIONS = Arrays.asList(8, 16);
         
-    private String identifier;
+    public String identifier;
     private String value;
     private int size;
 
     public Register(String identifier, int size) {
         if (!SIZE_OPTIONS.contains(size)) {
-            String expectionMessage = String.format("Tamanho do registrador %s inválido!", identifier);
+            String excepctionMessage = String.format("Size of register %s is invalid!", identifier);
             
-            throw new IllegalArgumentException(expectionMessage);
+            throw new IllegalArgumentException(excepctionMessage);
         }
 
         String initialValue = this.createInitialValue(size);
@@ -41,9 +41,9 @@ public class Register {
         int registerSize = this.getSize();
 
         if (newValueSize != registerSize) {
-            String expectionMessage = String.format("O valor do registrador %s deve possuir tamanho %2d!", this.getIdentifier(), this.getSize());
+            String excepctionMessage = String.format("The value of register %s should have size %2d!", this.getIdentifier(), this.getSize());
             
-            throw new IllegalArgumentException(expectionMessage);
+            throw new IllegalArgumentException(excepctionMessage);
         }
 
         this.value = value;
@@ -52,8 +52,8 @@ public class Register {
     private String createInitialValue(int size) {
         String BIT_VALUE_ZERO = "0";
 
-        String initalMemoryValue = BIT_VALUE_ZERO.repeat(size);
+        String initialMemoryValue = BIT_VALUE_ZERO.repeat(size);
         
-        return initalMemoryValue;
+        return initialMemoryValue;
     }
 }
