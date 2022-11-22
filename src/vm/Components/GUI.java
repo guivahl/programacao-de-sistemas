@@ -13,11 +13,14 @@ import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JRadioButton;
+import javax.swing.JTextField;
 
 import vm.Components.Interface.Button;
 import vm.Components.Interface.Label;
@@ -33,12 +36,20 @@ public class GUI {
     private JPanel mainPanel;
     private JPanel stackPanel;
     private JPanel valuesPanel;
+    private JPanel controlsPanel;
     private JPanel btnControlPanel;
+    private JPanel userControlPanel;
     private JScrollPane terminalPanel;
     RegistersPanel registersPanel;
 
     public JButton runBtn;
     public JButton mountBtn;
+    public JButton sendBtn;
+
+    public JRadioButton modeStepBtn;
+    public JRadioButton modeAllBtn;
+
+    public JTextField userInput;
 
     public GUI(ArrayList<Register> registers, Memory memory, Observable logger) {
         JFrame frame = this.initiateFrame();
@@ -59,7 +70,17 @@ public class GUI {
         this.valuesPanel.setLayout(new GridLayout(2,3, 15, 15));
 
         this.bootstrapValuePanels(registers, memory, logger);
+
+        this.bootstrapTextField();
         this.bootstrapButtons();
+
+        this.controlsPanel = new JPanel();
+        this.controlsPanel.setBackground(Color.DARK_GRAY);
+
+        this.controlsPanel.add(this.btnControlPanel);
+        this.controlsPanel.add(this.userControlPanel);
+
+        valuesPanel.add(this.controlsPanel);
 
         this.mainPanel.add(valuesPanel);
 
@@ -103,7 +124,7 @@ public class GUI {
 
         GridBagConstraints gbc = getGBCConstraints();
 
-        this.runBtn = new Button("run").button;
+        this.runBtn = new Button("run",100, 100).button;
         this.runBtn.setEnabled(false);
         this.runBtn.addActionListener(new ActionListener(){
             @Override
@@ -112,7 +133,7 @@ public class GUI {
             };
         });
 
-        this.mountBtn = new Button("mount").button;
+        this.mountBtn = new Button("mount", 100, 100).button;
         this.mountBtn.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -120,10 +141,29 @@ public class GUI {
             };
         });
 
+        this.modeStepBtn = new JRadioButton("Run step", false);
+        this.modeAllBtn = new JRadioButton("Run all", false);
+
+        this.btnControlPanel.add(this.modeStepBtn, gbc);
+        this.btnControlPanel.add(this.modeAllBtn, gbc);
+
         this.btnControlPanel.add(this.mountBtn, gbc);
         this.btnControlPanel.add(this.runBtn, gbc);
+    }
 
-        valuesPanel.add(this.btnControlPanel);
+    private void bootstrapTextField() {
+        this.userInput = new JTextField(3);
+        JLabel inputLabel = new Label("Input stream", Color.WHITE, Color.darkGray, 400, 40, 1).label;
+        this.sendBtn = new Button("send", 40, 100).button;
+        this.sendBtn.setEnabled(false);
+
+        this.userControlPanel = new JPanel();
+        this.userControlPanel.setBackground(Color.DARK_GRAY);
+        this.userControlPanel.setLayout(new GridLayout(3, 1));
+
+        this.userControlPanel.add(inputLabel);
+        this.userControlPanel.add(this.userInput);
+        this.userControlPanel.add(this.sendBtn);
     }
 
     public void updateUI(){
