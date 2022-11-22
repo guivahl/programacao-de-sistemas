@@ -37,7 +37,6 @@ public class Memory extends Observable {
 
     public void pushValue(String value) throws IllegalArgumentException {
         if(this.validateStringSize(value)) {
-            logger.logMessage(value, Logger.SUCCESS_MESSAGE);
             this.values.add(value);
             setChanged();
             notifyObservers();

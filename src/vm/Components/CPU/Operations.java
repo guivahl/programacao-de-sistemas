@@ -1,5 +1,6 @@
 package vm.Components.CPU;
 
+import vm.Components.InputStream;
 import vm.Components.Memory;
 import vm.Components.Stack;
 import vm.Components.Logger.Logger;
@@ -10,7 +11,6 @@ import java.util.HashMap;
 
 public class Operations {
     private Register programCounter;
-    private Register stackPointer;//If the stack does the increment and decrement automatically, this may not be used (functions does push/pop)
     private Register accumulator;
     private Register operationMode;
     private Register instructionRegister;
@@ -21,38 +21,39 @@ public class Operations {
     private boolean stopCondition;
     private Scanner in;
     private Logger logger;
+    private int mode;
+    private InputStream userInputStream;
+    private int initialAddress;
 
-    public Operations(Memory memory, Stack stack, Register programCounter, Register stackPointer,
+    public Operations(Memory memory, Stack stack, Register programCounter,
                         Register accumulator, Register operationMode, Register instructionRegister,
-                        Register memoryAddressRegister, Logger logger)
+                        Register memoryAddressRegister, Logger logger, InputStream input, int initialAddress)
     {
         this.memory = memory;
         this.stack = stack;
         this.programCounter = programCounter;
-        this.stackPointer = stackPointer;
         this.accumulator = accumulator;
         this.operationMode = operationMode;
         this.instructionRegister = instructionRegister;
         this.memoryAddressRegister = memoryAddressRegister;
         this.stopCondition = true;
-        this.operationMode.setValue("00000010");//This must be entered in the interface in the main and send in the constructor.
         this.operationsMap = new HashMap<>();
         this.logger = logger;
+        this.userInputStream = input;
+        this.initialAddress = initialAddress;
         setOperationData();
     }
 
-    public void execute(int initialAddress){ 
+    public void execute(){ 
         in = new Scanner(System.in);
-        this.programCounter.setValue(parseIntToBinarySixteenBits(initialAddress));
+        this.programCounter.setValue(parseIntToBinarySixteenBits(this.initialAddress));
+        this.stopCondition = true;
         while (stopCondition){
             System.out.println("Instrução = " + memory.getValue(Integer.parseInt(this.programCounter.getValue(), 2)));
-            printMemory();
             if (Integer.parseInt(this.operationMode.getValue(), 2) == 1){
                 in.nextLine();
             }
-            
             operationsMap.get(memory.getValue(Integer.parseInt(this.programCounter.getValue(), 2))).run();
-
         }
         in.close();
     }
@@ -68,7 +69,7 @@ public class Operations {
         } else if (mode == 3) {
             opd1 = Integer.parseInt(this.memoryAddressRegister.getValue(), 2);
         } else {
-            opd1 = Integer.parseInt(memory.getValue(Integer.parseInt(this.memoryAddressRegister.getValue(), 2) + 10), 2);
+            opd1 = Integer.parseInt(memory.getValue(Integer.parseInt(this.memoryAddressRegister.getValue(), 2)), 2);
         }
         this.accumulator.setValue(parseIntToBinarySixteenBits(Integer.parseInt(this.accumulator.getValue(), 2) + opd1));
         index++;
@@ -85,7 +86,7 @@ public class Operations {
         if (mode == 2){
             opd1 = Integer.parseInt(memory.getValue(Integer.parseInt(this.memoryAddressRegister.getValue(), 2)), 2);
         } else {
-            opd1 = Integer.parseInt(memory.getValue(index), 2) + 10;
+            opd1 = Integer.parseInt(memory.getValue(index), 2);
         }
         this.programCounter.setValue(parseIntToBinarySixteenBits(opd1));
         return null;
@@ -121,7 +122,7 @@ public class Operations {
             if (mode == 2){
                 opd1 = Integer.parseInt(memory.getValue(Integer.parseInt(this.memoryAddressRegister.getValue(), 2)), 2);
             } else {
-                opd1 = Integer.parseInt(memory.getValue(index), 2) + 10;
+                opd1 = Integer.parseInt(memory.getValue(index), 2);
             }
             this.programCounter.setValue(parseIntToBinarySixteenBits(opd1));
         } else {
@@ -179,14 +180,14 @@ public class Operations {
         } else if (mode1 == 3) {
             opd1 = Integer.parseInt(this.memoryAddressRegister.getValue(), 2);
         } else {
-            opd1 = Integer.parseInt(this.memory.getValue(Integer.parseInt(this.memoryAddressRegister.getValue() ,2) + 10), 2);
+            opd1 = Integer.parseInt(this.memory.getValue(Integer.parseInt(this.memoryAddressRegister.getValue() ,2)), 2);
         }
         index++;
         this.memoryAddressRegister.setValue(memory.getValue(index));
         if (mode2 == 2){
             opd2 = Integer.parseInt(memory.getValue(Integer.parseInt(this.memoryAddressRegister.getValue(), 2)), 2);
         } else {
-            opd2 = Integer.parseInt(this.memoryAddressRegister.getValue(), 2) + 10;
+            opd2 = Integer.parseInt(this.memoryAddressRegister.getValue(), 2);
         }
 
         memory.setValue(opd2, parseIntToBinarySixteenBits(opd1));
@@ -225,7 +226,7 @@ public class Operations {
         } else if (mode == 3) {
             opd1 = Integer.parseInt(this.memoryAddressRegister.getValue(), 2);
         } else {
-            opd1 = Integer.parseInt(memory.getValue(Integer.parseInt(this.memoryAddressRegister.getValue(), 2) + 10), 2);
+            opd1 = Integer.parseInt(memory.getValue(Integer.parseInt(this.memoryAddressRegister.getValue(), 2)), 2);
         }
         this.accumulator.setValue(parseIntToBinarySixteenBits(opd1));
         index++;
@@ -253,25 +254,36 @@ public class Operations {
     }
 
     private Operations readInstruction(int mode){
-        System.out.println("Inform the input stream value: (While we don't put this on interface)!");
-        int inputStream = in.nextInt();
-        in.nextLine();
+        logger.logMessage("Inform the input stream value: ", Logger.ATTENTION_MESSAGE);
 
-        this.instructionRegister.setValue("0000000000001100");
-         int index = Integer.parseInt(this.programCounter.getValue(), 2);
-         int opd1;
-         index++;
-         this.memoryAddressRegister.setValue(memory.getValue(index));
-
-         if (mode == 2){
-            opd1 = Integer.parseInt(memory.getValue(Integer.parseInt(this.memoryAddressRegister.getValue(), 2)), 2);
-        } else {
-            opd1 = Integer.parseInt(this.memoryAddressRegister.getValue(), 2) + 10;
+        if(this.userInputStream.value.length() == 0){
+            this.mode = mode;
+            this.stopCondition = false;
+            return null;
         }
 
-        memory.setValue(opd1, parseIntToBinarySixteenBits(inputStream));
+        return continueReadInstruction();
+    }
+
+    public Operations continueReadInstruction(){
+        int inputStream = Integer.parseInt(this.userInputStream.value);
+
+        this.instructionRegister.setValue("0000000000001100");
+        int index = Integer.parseInt(this.programCounter.getValue(), 2);
+        int opd1;
         index++;
-        this.programCounter.setValue(parseIntToBinarySixteenBits(index));
+        this.memoryAddressRegister.setValue(memory.getValue(index));
+
+        if (mode == 2){
+           opd1 = Integer.parseInt(memory.getValue(Integer.parseInt(this.memoryAddressRegister.getValue(), 2)), 2);
+       } else {
+           opd1 = Integer.parseInt(this.memoryAddressRegister.getValue(), 2);
+       }
+
+       memory.setValue(opd1, parseIntToBinarySixteenBits(inputStream));
+       index++;
+       this.programCounter.setValue(parseIntToBinarySixteenBits(index));
+
         return null;
     }
 
@@ -296,7 +308,7 @@ public class Operations {
         if (mode == 2){
             opd1 = Integer.parseInt(memory.getValue(Integer.parseInt(this.memoryAddressRegister.getValue(), 2)), 2);
         } else {
-            opd1 = Integer.parseInt(this.memoryAddressRegister.getValue(), 2) + 10;
+            opd1 = Integer.parseInt(this.memoryAddressRegister.getValue(), 2);
         }
         this.memory.setValue(opd1, this.accumulator.getValue());
         index++;
@@ -315,7 +327,7 @@ public class Operations {
         } else if (mode == 3) {
             opd1 = Integer.parseInt(this.memoryAddressRegister.getValue(), 2);
         } else {
-            opd1 = Integer.parseInt(memory.getValue(Integer.parseInt(this.memoryAddressRegister.getValue(), 2) + 10), 2);
+            opd1 = Integer.parseInt(memory.getValue(Integer.parseInt(this.memoryAddressRegister.getValue(), 2)), 2);
         }
         this.accumulator.setValue(parseIntToBinarySixteenBits(Integer.parseInt(this.accumulator.getValue(), 2) - opd1));
         index++;
@@ -337,9 +349,9 @@ public class Operations {
         } else if (mode == 3) {
             opd1 = Integer.parseInt(this.memoryAddressRegister.getValue(), 2);
         } else {
-            opd1 = Integer.parseInt(memory.getValue(Integer.parseInt(this.memoryAddressRegister.getValue(), 2) + 10), 2);
+            opd1 = Integer.parseInt(memory.getValue(Integer.parseInt(this.memoryAddressRegister.getValue(), 2)), 2);
         }
-        logger.logMessage("Output stream (While we don't put this on interface)!) " + opd1, Logger.SUCCESS_MESSAGE);
+        logger.logMessage("Output stream " + opd1, Logger.SUCCESS_MESSAGE);
         index++;
         this.programCounter.setValue(parseIntToBinarySixteenBits(index));
         return null;
@@ -444,14 +456,4 @@ public class Operations {
         fullStr = signal + zeroes + binary;
         return fullStr;
     }
-
-    private void printMemory(){
-        for (int i = 10; i<49; i++)
-            System.out.println("pos" + (i-10) + ": " + memory.getValue(i));
-        
-        System.out.println("ACC = " + this.accumulator.getValue());
-        System.out.println("ACC = " + Integer.parseInt(this.accumulator.getValue(), 2));
-        System.out.println("PC = " + Integer.parseInt(this.programCounter.getValue(), 2));
-    }
-
 }

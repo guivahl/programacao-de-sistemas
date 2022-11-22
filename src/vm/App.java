@@ -31,12 +31,14 @@ public class App implements ActionListener {
     private Assembler assembler;
     private MacroProcessor macroProcessor;
     private Operations operations;
+    private InputStream inputStream;
 
     public App() {
         this.logger = new Logger();
         this.memory = new Memory(logger);
         this.stack = new Stack(memory, 10);
         this.assembler = new Assembler(this.logger);
+        this.inputStream = new InputStream("");
 
         this.macroProcessor = new MacroProcessor("INPUTFILE.ASM");
 
@@ -53,9 +55,11 @@ public class App implements ActionListener {
 
         gui.runBtn.addActionListener(this);
         gui.mountBtn.addActionListener(this);
+        gui.sendBtn.addActionListener(this);
+        gui.modeAllBtn.addActionListener(this);
+        gui.modeStepBtn.addActionListener(this);
 
-        //TODO: The interface must ask for the execution mode on the operationMode register.
-        this.operations = new Operations(memory, stack, programCounter, stackPointer, accumulator, operationMode, instructionRegister, memoryAddressRegister, logger);
+        this.operations = new Operations(memory, stack, programCounter, accumulator, operationMode, instructionRegister, memoryAddressRegister, logger, inputStream, 10);
     }
 
     public static void main(String[] args) throws Exception {
@@ -87,7 +91,7 @@ public class App implements ActionListener {
             logger.logMessage("source code is empty", Logger.ATTENTION_MESSAGE);
         }
 
-        operations.execute(10);
+        operations.execute();
     }
 
     private void mount() {
@@ -101,10 +105,26 @@ public class App implements ActionListener {
         this.assembler.assemble();
     }
 
-    // listener pro botão de rodar programa
+    private void send(){
+        String inputStream = this.gui.userInput.getText();
+        this.inputStream.setValue(inputStream);
+    
+        this.operations.execute();
+    }
+
+    // listener pros botões
     public void actionPerformed(ActionEvent event) {
-        if(event.getActionCommand() == "run") this.run();
+        if(this.gui.modeStepBtn.isSelected()){
+            this.operationMode.setValue("00000001");
+        } else {
+            this.operationMode.setValue("00000000");
+        }
+        if(event.getActionCommand() == "run"){
+            this.gui.sendBtn.setEnabled(true);
+            this.run();
+        }
         if(event.getActionCommand() == "mount") this.mount();
+        if(event.getActionCommand() == "send") this.send();
 
     }
 }
