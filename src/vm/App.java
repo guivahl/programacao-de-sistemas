@@ -6,12 +6,15 @@ import vm.Components.Memory;
 import vm.Components.Register;
 import vm.Components.SourceCodeHandler;
 import vm.Components.Stack;
-import vm.Components.Assembler.Assembler;
+import vm.Components.MacroProcessor.MacroProcessor;
+import vm.Components.Assembler.*;
 import vm.Components.*;
 import vm.Components.Logger.*;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 public class App implements ActionListener {
     private Logger logger;
@@ -25,12 +28,15 @@ public class App implements ActionListener {
     private Register instructionRegister;
     private Register memoryAddressRegister;
     private Assembler assembler;
+    private MacroProcessor macroProcessor;
 
-    public App(){
+    public App() {
         this.logger = new Logger();
         this.memory = new Memory(logger);
         this.stack = new Stack(memory, 10);
         this.assembler = new Assembler(this.logger);
+
+        this.macroProcessor = new MacroProcessor("INPUTFILE.ASM");
 
         ArrayList<Register> registers = new ArrayList<Register>();
         this.programCounter = initializeRegister("PC", 16, registers);
@@ -51,12 +57,14 @@ public class App implements ActionListener {
         new App();
     }
 
-    private static Register initializeRegister(String identifier, int size, ArrayList<Register> registerArray){
+    private static Register initializeRegister(String identifier, int size,
+            ArrayList<Register> registerArray) {
         Register newRegister = new Register(identifier, size);
         registerArray.add(newRegister);
 
         return newRegister;
     }
+
 
     private void run() {
         this.logger.logMessage("starting execution", Logger.SUCCESS_MESSAGE);
@@ -66,8 +74,8 @@ public class App implements ActionListener {
         String data;
         data = reader.readFile("source-code.txt");
         ArrayList<String> words = reader.parseStringToWords(data);
-        if(data.length() > 0){
-            for(String word : words) {
+        if (data.length() > 0) {
+            for (String word : words) {
                 memory.pushValue(word);
             }
         } else {
@@ -77,13 +85,22 @@ public class App implements ActionListener {
         // TODO: chamar a classe Operations para executar código
     }
 
-    private void mount(){
+    private void mount() {
+        try {
+            this.macroProcessor.run();
+        } catch (FileNotFoundException e) {
+            logger.logMessage("Arquivo de entrada não encontrado.", Logger.ERROR_MESSAGE);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         this.assembler.assemble();
     }
 
     // listener pro botão de rodar programa
     public void actionPerformed(ActionEvent event) {
-        if(event.getActionCommand() == "run") this.run();
-        if(event.getActionCommand() == "mount") this.mount();
+        if (event.getActionCommand() == "run")
+            this.run();
+        if (event.getActionCommand() == "mount")
+            this.mount();
     }
 }
