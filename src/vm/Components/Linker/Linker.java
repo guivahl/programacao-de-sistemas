@@ -61,7 +61,7 @@ public class Linker {
                 referenceVector.add(false);
             }
         }
-        finalSourceCode.add(padString(Integer.toBinaryString(100),WORD_SIZE));
+        finalSourceCode.add(padString(Integer.toBinaryString(10),WORD_SIZE));
     }
 
     private String padString(String word, int padSize) {
