@@ -20,6 +20,7 @@ public class Assembler {
     private int lineCounter;
     private Map<String, InstructionWrapper> instructionsMap;
     private Map<String, Integer> symbolTable;
+    private Map<Integer, String> useTable;
     private Logger logger;
 
     public Assembler(Logger logger) {
@@ -27,6 +28,7 @@ public class Assembler {
         lineCounter = 1;
         instructionsMap = new HashMap<>();
         symbolTable = new HashMap<>();
+        useTable = new HashMap<>();
         this.logger = logger;
         setInstructionData();
     }
@@ -36,7 +38,7 @@ public class Assembler {
             firstPass();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-            System.out.println("Erro no processo do primeiro passo do montador!");
+            logger.logMessage("Error on first step of assembler!", Logger.ERROR_MESSAGE);
         } catch (AssemblerException e) {
             return;
         } finally {
@@ -49,11 +51,20 @@ public class Assembler {
             e.printStackTrace();
             logger.logMessage("Error on second step of assembler!", Logger.ERROR_MESSAGE);
         }
+
+        try {
+            createSymbolTableTextFile();
+            createUseTableTextFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+            logger.logMessage("Error trying to create symbol and use table text files!", Logger.ERROR_MESSAGE);
+        }
     }
 
     private void firstPass() throws FileNotFoundException, AssemblerException {
         Reader reader = new Reader("MASMAPRG.ASM");
         String line = reader.readLine();
+        int useTableAddress = 0;
 
         // retira comentarios
         line = line.split(";")[0];
@@ -88,10 +99,18 @@ public class Assembler {
 
                 // caso o parametro seja uma instrucao
                 if (instructionsMap.containsKey(param)) {
+                    if (instructionsMap.get(param).getInstructionSize() != 0) {
+                        useTableAddress += 1;
+                    }
                     addressCounter += instructionsMap.get(param).getInstructionSize();
                 // caso o parametro seja um simbolo
                 } else if (!instructionsMap.containsKey(param) && param.matches(REGEX_STARTS_WITH_LETTER)) {
-
+                    // coloca na tabela de uso
+                    if (param != params[0] || !instructionsMap.containsKey(params[1])) {
+                        useTable.put(useTableAddress, param);
+                        useTableAddress += 1;
+                    }
+                    
                     if (param.length() > PARAM_MAX_LENGTH) {
                         throw new AssemblerException("Assembler Exception: Invalid argument (" + param + ") at line " + lineCounter + ". Symbol should have a maximum length of 8 characters.", this.logger);
                     }
@@ -125,7 +144,6 @@ public class Assembler {
                     }
 
                 }
-
             }
 
             line = reader.readLine();
@@ -184,6 +202,22 @@ public class Assembler {
 
         fullStr = zeroes + binary;
         return fullStr;
+    }
+
+    private void createSymbolTableTextFile() throws IOException {
+        Writer writer = new Writer("symbol-table.txt");
+        for (String symbol : symbolTable.keySet()) {
+            writer.write(symbolTable.get(symbol) + " " + symbol + "\n");
+        }
+        writer.close();
+    }
+
+    private void createUseTableTextFile() throws IOException {
+        Writer writer = new Writer("use-table.txt");
+        for (int address : useTable.keySet()) {
+            writer.write(address + " " + useTable.get(address) + "\n");
+        }
+        writer.close();
     }
 
     /**
