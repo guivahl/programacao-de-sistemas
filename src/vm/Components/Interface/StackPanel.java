@@ -45,7 +45,6 @@ public class StackPanel implements Observer {
 
     @Override
     public void update(Observable obs, Object arg) {
-        System.out.println("chegou na atualização");
         if (obs instanceof Memory) {
             this.panel.removeAll();
             this.setPanelValues(obs);
