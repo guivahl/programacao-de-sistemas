@@ -214,7 +214,7 @@ public class Assembler {
     }
 
     private void createUseTableTextFile(int i) throws IOException {
-        Writer writer = new Writer("use-table" + i + ".txt");
+        Writer writer = new Writer("reference-table" + i + ".txt");
         for (int address : useTable.keySet()) {
             writer.write(address + " " + useTable.get(address) + "\n");
         }
