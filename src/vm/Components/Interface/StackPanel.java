@@ -11,7 +11,6 @@ import javax.swing.JPanel;
 import vm.Components.Memory;
 
 import javax.swing.BorderFactory;
-import javax.swing.JLabel;
 
 public class StackPanel implements Observer {
     static int STACK_SIZE = 10;
@@ -19,6 +18,7 @@ public class StackPanel implements Observer {
     public JPanel panel;
 
     public StackPanel(Observable memory){
+        memory.addObserver(this);
         this.panel = new JPanel();
         this.panel.setBorder(BorderFactory.createLineBorder(Color.GRAY));
         this.panel.setBackground(Color.BLACK);
@@ -43,10 +43,10 @@ public class StackPanel implements Observer {
         this.panel.updateUI();
     }
 
-
     @Override
     public void update(Observable obs, Object arg) {
         if (obs instanceof Memory) {
+            this.panel.removeAll();
             this.setPanelValues(obs);
             this.panel.updateUI();
         }
