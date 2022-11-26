@@ -20,6 +20,7 @@ public class Assembler {
     private int lineCounter;
     private Map<String, InstructionWrapper> instructionsMap;
     private Map<String, Integer> symbolTable;
+    private Map<Integer, String> useTable;
     private Logger logger;
 
     public Assembler(Logger logger) {
@@ -27,16 +28,17 @@ public class Assembler {
         lineCounter = 1;
         instructionsMap = new HashMap<>();
         symbolTable = new HashMap<>();
+        useTable = new HashMap<>();
         this.logger = logger;
         setInstructionData();
     }
 
-    public void assemble() {
+    public void assemble(int i) {
         try {
             firstPass();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-            System.out.println("Erro no processo do primeiro passo do montador!");
+            logger.logMessage("Error on first step of assembler!", Logger.ERROR_MESSAGE);
         } catch (AssemblerException e) {
             return;
         } finally {
@@ -44,16 +46,25 @@ public class Assembler {
         }
 
         try {
-            secondPass();
+            secondPass(i);
         } catch (IOException e) {
             e.printStackTrace();
             logger.logMessage("Error on second step of assembler!", Logger.ERROR_MESSAGE);
+        }
+
+        try {
+            createSymbolTableTextFile(i);
+            createUseTableTextFile(i);
+        } catch (IOException e) {
+            e.printStackTrace();
+            logger.logMessage("Error trying to create symbol and use table text files!", Logger.ERROR_MESSAGE);
         }
     }
 
     private void firstPass() throws FileNotFoundException, AssemblerException {
         Reader reader = new Reader("MASMAPRG.ASM");
         String line = reader.readLine();
+        int useTableAddress = 0;
 
         // retira comentarios
         line = line.split(";")[0];
@@ -88,10 +99,18 @@ public class Assembler {
 
                 // caso o parametro seja uma instrucao
                 if (instructionsMap.containsKey(param)) {
+                    if (instructionsMap.get(param).getInstructionSize() != 0) {
+                        useTableAddress += 1;
+                    }
                     addressCounter += instructionsMap.get(param).getInstructionSize();
                 // caso o parametro seja um simbolo
                 } else if (!instructionsMap.containsKey(param) && param.matches(REGEX_STARTS_WITH_LETTER)) {
-
+                    // coloca na tabela de uso
+                    if (param != params[0] || !instructionsMap.containsKey(params[1])) {
+                        useTable.put(useTableAddress, param);
+                        useTableAddress += 1;
+                    }
+                    
                     if (param.length() > PARAM_MAX_LENGTH) {
                         throw new AssemblerException("Assembler Exception: Invalid argument (" + param + ") at line " + lineCounter + ". Symbol should have a maximum length of 8 characters.", this.logger);
                     }
@@ -125,7 +144,6 @@ public class Assembler {
                     }
 
                 }
-
             }
 
             line = reader.readLine();
@@ -135,14 +153,15 @@ public class Assembler {
         // testa se algum simbolo nao foi definido ao final do primeiro passo
         for (String key : symbolTable.keySet()) {
             if (symbolTable.get(key) == 0) {
-                throw new AssemblerException("Assembler Exception: Missing arguments at input. Found undefined symbols at the end of the first pass.", this.logger);
+                System.out.println("Assembler Exception: Missing arguments at input. Found undefined symbols at the end of the first pass.");
+                //throw new AssemblerException("Assembler Exception: Missing arguments at input. Found undefined symbols at the end of the first pass.", this.logger);
             }
         }
     }
 
-    private void secondPass() throws IOException {
+    private void secondPass(int i) throws IOException {
         Reader reader = new Reader("MASMAPRG.ASM");
-        Writer writer = new Writer("source-code.txt");
+        Writer writer = new Writer("source-code" + i + ".txt");
         String line = reader.readLine();
         String data;
         while (line != null) {
@@ -184,6 +203,22 @@ public class Assembler {
 
         fullStr = zeroes + binary;
         return fullStr;
+    }
+
+    private void createSymbolTableTextFile(int i) throws IOException {
+        Writer writer = new Writer("symbol-table" + i + ".txt");
+        for (String symbol : symbolTable.keySet()) {
+            writer.write(symbolTable.get(symbol) + " " + symbol + "\n");
+        }
+        writer.close();
+    }
+
+    private void createUseTableTextFile(int i) throws IOException {
+        Writer writer = new Writer("reference-table" + i + ".txt");
+        for (int address : useTable.keySet()) {
+            writer.write(address + " " + useTable.get(address) + "\n");
+        }
+        writer.close();
     }
 
     /**
