@@ -27,7 +27,7 @@ public class Linker {
         Reader scReader;
         Reader stReader;
         Reader rtReader;
-        Writer writer = new Writer("finalSourceCode.txt");
+        Writer writer = new Writer("final-source-code.txt");
 
         for (int i = 0; i < numFiles;i++) {
                 scReader = new Reader("source-code" + i + ".txt");

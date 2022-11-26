@@ -11,6 +11,8 @@ import vm.Components.Assembler.*;
 import vm.Components.*;
 import vm.Components.Logger.*;
 import vm.Components.CPU.Operations;
+import vm.Components.Linker.Linker;
+import vm.Components.Loader.Loader;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -32,6 +34,7 @@ public class App implements ActionListener {
     private MacroProcessor macroProcessor;
     private Operations operations;
     private InputStream inputStream;
+    private Linker linker;
 
     public App() {
         this.logger = new Logger();
@@ -81,7 +84,7 @@ public class App implements ActionListener {
         // Lê o source code e inicializa a memória com o programa
         SourceCodeHandler reader = new SourceCodeHandler(logger);
         String data;
-        data = reader.readFile("source-code.txt");
+        data = reader.readFile("final-source-code.txt");
         ArrayList<String> words = reader.parseStringToWords(data);
         if (data.length() > 0) {
             for (String word : words) {
@@ -103,6 +106,13 @@ public class App implements ActionListener {
             e.printStackTrace();
         }
         this.assembler.assemble(1);
+
+        try {
+            this.linker = new Linker(1);
+        } catch (Exception e1) {
+            // TODO Auto-generated catch block
+            this.logger.logMessage("Exception on Linker", Logger.ERROR_MESSAGE);
+        }
     }
 
     private void send(){
