@@ -25,6 +25,8 @@ public class Operations {
     private InputStream userInputStream;
     private int initialAddress;
 
+    private int memoryIncr = 10;
+
     public Operations(Memory memory, Stack stack, Register programCounter,
                         Register accumulator, Register operationMode, Register instructionRegister,
                         Register memoryAddressRegister, Logger logger, InputStream input, int initialAddress)
@@ -69,7 +71,7 @@ public class Operations {
         } else if (mode == 3) {
             opd1 = Integer.parseInt(this.memoryAddressRegister.getValue(), 2);
         } else {
-            opd1 = Integer.parseInt(memory.getValue(Integer.parseInt(this.memoryAddressRegister.getValue(), 2)), 2);
+            opd1 = Integer.parseInt(memory.getValue(Integer.parseInt(this.memoryAddressRegister.getValue(), 2) + this.memoryIncr), 2);
         }
         this.accumulator.setValue(parseIntToBinarySixteenBits(Integer.parseInt(this.accumulator.getValue(), 2) + opd1));
         index++;
@@ -86,7 +88,7 @@ public class Operations {
         if (mode == 2){
             opd1 = Integer.parseInt(memory.getValue(Integer.parseInt(this.memoryAddressRegister.getValue(), 2)), 2);
         } else {
-            opd1 = Integer.parseInt(memory.getValue(index), 2);
+            opd1 = Integer.parseInt(memory.getValue(index), 2) + this.memoryIncr;
         }
         this.programCounter.setValue(parseIntToBinarySixteenBits(opd1));
         return null;
@@ -102,7 +104,7 @@ public class Operations {
             if (mode == 2){
                 opd1 = Integer.parseInt(memory.getValue(Integer.parseInt(this.memoryAddressRegister.getValue(), 2)), 2);
             } else {
-                opd1 = Integer.parseInt(memory.getValue(index), 2);
+                opd1 = Integer.parseInt(memory.getValue(index), 2) + this.memoryIncr;
             }
             this.programCounter.setValue(parseIntToBinarySixteenBits(opd1));
         } else {
@@ -122,7 +124,7 @@ public class Operations {
             if (mode == 2){
                 opd1 = Integer.parseInt(memory.getValue(Integer.parseInt(this.memoryAddressRegister.getValue(), 2)), 2);
             } else {
-                opd1 = Integer.parseInt(memory.getValue(index), 2);
+                opd1 = Integer.parseInt(memory.getValue(index), 2) + this.memoryIncr;
             }
             this.programCounter.setValue(parseIntToBinarySixteenBits(opd1));
         } else {
@@ -180,14 +182,14 @@ public class Operations {
         } else if (mode1 == 3) {
             opd1 = Integer.parseInt(this.memoryAddressRegister.getValue(), 2);
         } else {
-            opd1 = Integer.parseInt(this.memory.getValue(Integer.parseInt(this.memoryAddressRegister.getValue() ,2)), 2);
+            opd1 = Integer.parseInt(this.memory.getValue(Integer.parseInt(this.memoryAddressRegister.getValue() ,2) + this.memoryIncr), 2);
         }
         index++;
         this.memoryAddressRegister.setValue(memory.getValue(index));
         if (mode2 == 2){
             opd2 = Integer.parseInt(memory.getValue(Integer.parseInt(this.memoryAddressRegister.getValue(), 2)), 2);
         } else {
-            opd2 = Integer.parseInt(this.memoryAddressRegister.getValue(), 2);
+            opd2 = Integer.parseInt(this.memoryAddressRegister.getValue(), 2) + this.memoryIncr;
         }
 
         memory.setValue(opd2, parseIntToBinarySixteenBits(opd1));
@@ -226,7 +228,7 @@ public class Operations {
         } else if (mode == 3) {
             opd1 = Integer.parseInt(this.memoryAddressRegister.getValue(), 2);
         } else {
-            opd1 = Integer.parseInt(memory.getValue(Integer.parseInt(this.memoryAddressRegister.getValue(), 2)), 2);
+            opd1 = Integer.parseInt(memory.getValue(Integer.parseInt(this.memoryAddressRegister.getValue(), 2) + this.memoryIncr), 2);
         }
         this.accumulator.setValue(parseIntToBinarySixteenBits(opd1));
         index++;
@@ -277,7 +279,7 @@ public class Operations {
         if (mode == 2){
            opd1 = Integer.parseInt(memory.getValue(Integer.parseInt(this.memoryAddressRegister.getValue(), 2)), 2);
        } else {
-           opd1 = Integer.parseInt(this.memoryAddressRegister.getValue(), 2);
+           opd1 = Integer.parseInt(this.memoryAddressRegister.getValue(), 2) + this.memoryIncr;
        }
 
        memory.setValue(opd1, parseIntToBinarySixteenBits(inputStream));
@@ -308,7 +310,7 @@ public class Operations {
         if (mode == 2){
             opd1 = Integer.parseInt(memory.getValue(Integer.parseInt(this.memoryAddressRegister.getValue(), 2)), 2);
         } else {
-            opd1 = Integer.parseInt(this.memoryAddressRegister.getValue(), 2);
+            opd1 = Integer.parseInt(this.memoryAddressRegister.getValue(), 2) + this.memoryIncr;
         }
         this.memory.setValue(opd1, this.accumulator.getValue());
         index++;
@@ -327,7 +329,7 @@ public class Operations {
         } else if (mode == 3) {
             opd1 = Integer.parseInt(this.memoryAddressRegister.getValue(), 2);
         } else {
-            opd1 = Integer.parseInt(memory.getValue(Integer.parseInt(this.memoryAddressRegister.getValue(), 2)), 2);
+            opd1 = Integer.parseInt(memory.getValue(Integer.parseInt(this.memoryAddressRegister.getValue(), 2) + this.memoryIncr), 2);
         }
         this.accumulator.setValue(parseIntToBinarySixteenBits(Integer.parseInt(this.accumulator.getValue(), 2) - opd1));
         index++;
@@ -349,7 +351,7 @@ public class Operations {
         } else if (mode == 3) {
             opd1 = Integer.parseInt(this.memoryAddressRegister.getValue(), 2);
         } else {
-            opd1 = Integer.parseInt(memory.getValue(Integer.parseInt(this.memoryAddressRegister.getValue(), 2)), 2);
+            opd1 = Integer.parseInt(memory.getValue(Integer.parseInt(this.memoryAddressRegister.getValue(), 2) + this.memoryIncr), 2);
         }
         logger.logMessage("Output stream " + opd1, Logger.SUCCESS_MESSAGE);
         index++;
