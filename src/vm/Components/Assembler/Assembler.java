@@ -33,7 +33,7 @@ public class Assembler {
         setInstructionData();
     }
 
-    public void assemble() {
+    public void assemble(int i) {
         try {
             firstPass();
         } catch (FileNotFoundException e) {
@@ -46,15 +46,15 @@ public class Assembler {
         }
 
         try {
-            secondPass();
+            secondPass(i);
         } catch (IOException e) {
             e.printStackTrace();
             logger.logMessage("Error on second step of assembler!", Logger.ERROR_MESSAGE);
         }
 
         try {
-            createSymbolTableTextFile();
-            createUseTableTextFile();
+            createSymbolTableTextFile(i);
+            createUseTableTextFile(i);
         } catch (IOException e) {
             e.printStackTrace();
             logger.logMessage("Error trying to create symbol and use table text files!", Logger.ERROR_MESSAGE);
@@ -153,14 +153,15 @@ public class Assembler {
         // testa se algum simbolo nao foi definido ao final do primeiro passo
         for (String key : symbolTable.keySet()) {
             if (symbolTable.get(key) == 0) {
-                throw new AssemblerException("Assembler Exception: Missing arguments at input. Found undefined symbols at the end of the first pass.", this.logger);
+                System.out.println("Assembler Exception: Missing arguments at input. Found undefined symbols at the end of the first pass.");
+                //throw new AssemblerException("Assembler Exception: Missing arguments at input. Found undefined symbols at the end of the first pass.", this.logger);
             }
         }
     }
 
-    private void secondPass() throws IOException {
+    private void secondPass(int i) throws IOException {
         Reader reader = new Reader("MASMAPRG.ASM");
-        Writer writer = new Writer("source-code.txt");
+        Writer writer = new Writer("source-code" + i + ".txt");
         String line = reader.readLine();
         String data;
         while (line != null) {
@@ -204,16 +205,16 @@ public class Assembler {
         return fullStr;
     }
 
-    private void createSymbolTableTextFile() throws IOException {
-        Writer writer = new Writer("symbol-table.txt");
+    private void createSymbolTableTextFile(int i) throws IOException {
+        Writer writer = new Writer("symbol-table" + i + ".txt");
         for (String symbol : symbolTable.keySet()) {
             writer.write(symbolTable.get(symbol) + " " + symbol + "\n");
         }
         writer.close();
     }
 
-    private void createUseTableTextFile() throws IOException {
-        Writer writer = new Writer("use-table.txt");
+    private void createUseTableTextFile(int i) throws IOException {
+        Writer writer = new Writer("use-table" + i + ".txt");
         for (int address : useTable.keySet()) {
             writer.write(address + " " + useTable.get(address) + "\n");
         }

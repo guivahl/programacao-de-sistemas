@@ -78,7 +78,7 @@ public class App implements ActionListener {
     }
 
     private void mount(){
-        this.assembler.assemble();
+        this.assembler.assemble(1);
     }
 
     // listener pro botão de rodar programa
