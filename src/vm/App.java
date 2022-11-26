@@ -102,7 +102,7 @@ public class App implements ActionListener {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        this.assembler.assemble();
+        this.assembler.assemble(1);
     }
 
     private void send(){
